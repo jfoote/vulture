@@ -25,7 +25,7 @@ Analyzes open source bug trackers for interesting vulnerabilities
     - date last modified
 
 - popularity
-    - ubuntu popularity contest (popcon) stats for project
+    - ubuntu popularity contest (popcon) stats for project. see [here](http://popcon.ubuntu.com/)
     - installed by default in ubuntu (see my blog post)
 
 ## other plans

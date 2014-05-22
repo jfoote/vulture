@@ -2,7 +2,6 @@
 
 import logging, os
 
-from vlib.launchpad import *
 
 '''
 try:
@@ -60,9 +59,11 @@ if __name__ == "__main__":
                 log.exception(e)
                 continue
     elif args[0] == "build-bug-cache":
+        from vlib.launchpad import cache_bugs
         cache_bugs(options.bug_cache_dir)
     elif args[0] == "update-cache":
         # cache info for recently updated bugs
+        from vlib.launchpad import cache_bugs
         from datetime import date, timedelta
         modified_since = (date.today()-timedelta(days=1)).strftime("%Y-%m-%d")
         cache_bugs(options.bug_cache_dir, modified_since, True)

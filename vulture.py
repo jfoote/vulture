@@ -1,9 +1,6 @@
 #!/usr/bin/python
 
 import logging, os
-#log = logging.getLogger('vulture')
-logging.basicConfig()
-log = logging
 
 from vlib.launchpad import *
 
@@ -38,8 +35,11 @@ if __name__ == "__main__":
         formatter = logging.Formatter(lformat)
         hdlr.setFormatter(formatter)
         log.addHandler(hdlr)
-        log.setLevel(getattr(logging, options.loglevel))
-        
+
+    logging.basicConfig()
+    log = logging.getLogger()
+    log.level = getattr(logging, options.loglevel)
+    print log.level
     log.info(str(options))
 
     #bucket = boto.connect_s3().get_bucket(options.bucket) 
@@ -61,9 +61,9 @@ if __name__ == "__main__":
                 log.exception(e)
                 continue
     elif args[0] == "rebuild-bug-cache":
-        cache_all(options.bug_cache_dir, False)
+        cache_bugs(options.bug_cache_dir)
     elif args[0] == "rebuild-bug-cache-force":
-        cache_all(options.bug_cache_dir, True)
+        cache_bugs(options.bug_cache_dir)
     elif args[0] == "update-cache":
         from datetime import date, timedelta
         modified_since = (date.today()-timedelta(days=1)).strftime("%Y-%m-%d")

@@ -1,3 +1,11 @@
+import os, sys, subprocess, shlex, time, re, json
+
+import logging
+log = logging.getLogger()
+
+from launchpadlib.launchpad import Launchpad
+launchpad = Launchpad.login_anonymously('hello-world', 'production')
+
 def cache_project_names(outdir, force=False, batch=300, total=34026): 
     # Quick-and-dirty script to scrape project names from Launchpad website. 
     # Used as a workaround to issue with Launchpad Python API that prohibits
@@ -26,7 +34,7 @@ def cache_project_names(outdir, force=False, batch=300, total=34026):
                 uri))
 
     if not os.path.exists(path):
-        os.makedir(path)
+        os.mkdir(path)
     open(path, "wt").write("\n".join(projects))
     log.debug("cache written to %s" % path)
 
@@ -49,141 +57,126 @@ def cache_bug_attachments(bug, dpath):
         except Exception as e:
             log.exception(e)
  
-def cache_bug(bug, dpath):
-    import json
-    if not os.path.exists(dpath):
-        os.makedir(dpath)
-    metadata = get_metadata(bug)
-    json.dump(open("%s/vulture.json" % dpath), metadata, indent=4)
-    cache_bug_attachments(bug, dpath)
 
-def get_metadata(bug):
+def cache_metadata(bug, bbug, dpath):
+    metadata = get_metadata(bug, bbug)
+    path = "%s/vulture.json" % dpath
+    if os.path.exists(path):
+        log.debug("found existing metadata at %s, merging" % path)
+        prev_metadata = json.load(open(path, "rt"))
+
+        # merge old project-specific metadata into new metadata 
+        project_name = str(bug).split("/")[-3]
+        for k, v in prev_metadata.items():
+            if k == "project_metadata":
+                for pname, md in v.items():
+                    if pname == project_name:
+                        # TODO: add "force" to ignore this check (actually, force should ignore merge altogether)
+                        raise RuntimeError("already have metadata for project: %s" % pname)
+                    metadata['project_metadata'][pname] = md
+            elif prev_metadata[k] != metadata[k]:
+                raise RuntimeError("non-project-specific metadata for bug %s does not match existing metadata for bug. key=%s, old_val=%s, new_val=%s" % (str(bug), k, prev_metadata[k], metadata[k]))
+
+    json.dump(metadata, open(path, "wt"), indent=4)
+
+def cache_bug(bug, dpath):
+    bbug = bug.bug
+    cache_metadata(bug, bbug, dpath)
+    cache_bug_attachments(bbug, dpath)
+
+def get_metadata(pbug, bbug):
     out = {}
+
+    # get data from 'project' bug and add it to list
+    pout = {}
+    fields = ['date_closed', 'related_tasks', 'assignee', 'date_assigned', 'date_left_closed', 'date_fix_committed', 'date_fix_released', 'date_in_progress', 'status', 'bug_target_name', 'importance', 'date_triaged', 'bug_target_display_name', 'milestone', 'target', 'date_confirmed', 'date_left_new', 'bug_watch', 'date_incomplete', 'is_complete', 'web_link']
+    for f in fields:
+        val = getattr(pbug, f, "")
+        if type(val) == type(""):
+            val = val.encode("UTF-8")
+        else:
+            val = str(val).encode("UTF-8")
+        pout[f] = val
+    project_name = str(pbug).split("/")[-3]
+    out['project_metadata'] = {project_name : pout}
+
+    # get data from 'bug' bug
     fields = ['title', 'web_link', 'security_related', 'date_created', 
             'date_last_updated', 'tags', 'description', 'target', 'target_name', 'target_display_name']
     for f in fields:
-        out[f] = getattr(bug, f, "").encode("UTF-8")
+        val = getattr(bbug, f, "")
+        if type(val) == type(""):
+            val = val.encode("UTF-8")
+        else:
+            val = str(val).encode("UTF-8")
+        out[f] = val
 
-    start = bug.title.find("crashed with ") + len("crashed with ")
-    end = start + bug.title[start:].find(" ")
-    sigtext = bug.title[start:end]
-    out['sigtext'] = sigtext
+    m = re.match("^.*(SIG[A-Z]+).*$", bbug.title)
+    if m:
+        out['sigtext'] = sigtext
+    else:
+        out['sigtext'] = "None"
 
     return out
 
-def cache_bugs_for_projects(project_names, outdir, ffwd=""):
-    import time, sys, os, subprocess, shlex
-    import logging
-    log = logging
-    
-    from launchpadlib.launchpad import Launchpad
-    launchpad = Launchpad.login_anonymously('hello-world', 'production')
-    
-    def has_stack_trace(bug):
-        '''
-        Returns True if this bug report has an Apport-style stack trace attachment.
-        Returns False otherwise.
-        '''
-        for attachment in bug.attachments:
-            if attachment.title == "Stacktrace.txt":
-                return True
-        return False
-    
-    total_projects = len(project_names)
-    i = 0
-    start_time = time.time()
-    
-    if not os.path.exists(outdir):
-        os.mkdir(outdir)
-    
-    # iterate over all projects and log Apport crash bug report info
-    for project_name in project_names:
-
-        # fast-forward to project, if specified (resume)
-        if ffwd and project_name != ffwd:
-            log.debug("resume: skipping %s" % project_name)
-            total_projects -= 1
-            continue
-        ffwd = None
-    
-        try:
-            log.debug(project_name)
-            pillar = launchpad.projects[project_name]
-            
-            #bugs = pillar.searchTasks(status=["Fix Committed", "Fix Released"])
-            #bugs = pillar.searchTasks()
-            bugs = pillar.searchTasks(status=["New", "Opinion", "Invalid", "Won't Fix", "Expired", "Confirmed", "Triaged", "In Progress", "Fix Committed", "Incomplete (with response)", "Incomplete (without response)"], tags='apport-crash') # TODO: maybe just iterate over distros and skip caching projects?
-            for bug in bugs:
-        
-                # verify bug report was produced by Apport, w/ stack trace 
-                if not "crashed with" in bug.title.lower():
-                    continue
-
-                # make dirs
-                bug_id_str = str(bug).split("/")[-1]
-                bug = launchpad.bugs[bug_id_str]
-                if not has_stack_trace(bug):
-                    continue
-                dpath = "%s/%s" % (outdir, project_name)
-                if not os.path.exists(dpath):
-                    os.mkdir(dpath)
-                dpath += "/%s" % bug_id_str
-                if not os.path.exists(dpath):
-                    os.mkdir(dpath)
-
-                # download info
-                cache_bug(bug, dpath)
-           
-            i += 1
-            print "%d/%d, %f sec remaining" % (i, total_projects, 
-                (time.time()-start_time)/i * (total_projects-i))
-            sys.stdout.flush()
-        except Exception as e:
-            log.error("%s: %s" % (project_name, str(e)))
-            log.exception(e)
-    log.info("done")
-
-def cache_all(outdir, force=False):
-    projects = cache_project_names(outdir, force)
-    cache_bugs_for_projects(projects, outdir)
-
-def cache_bugs(cachedir, modified_since):
-
-    from launchpadlib.launchpad import Launchpad
-    launchpad = Launchpad.login_anonymously('hello-world', 'production')
-    import pdb; pdb.set_trace()
+# see https://help.launchpad.net/Bugs/Statuses
+# and https://help.launchpad.net/Bugs/Statuses/External
+valid_status = ["New", "Opinion", "Invalid", 
+    "Won't Fix", "Expired", "Confirmed", "Triaged", 
+    "In Progress", "Fix Committed", "Fix Released", 
+    "Incomplete (with response)", "Incomplete (without response)", 
+    "Incomplete"]
+unreleased_status = list(set(valid_status) - set(["Fix Released"]))
+ 
+def has_stack_trace(bug):
+     '''
+     Returns True if this bug report has an Apport-style stack trace attachment.
+     Returns False otherwise.
+     '''
+     for attachment in bug.attachments:
+         if attachment.title == "Stacktrace.txt":
+             return True
+     return False
+  
+def cache_bugs(cachedir, modified_since=None):
 
     search_args = { 
-            'modified_since' : modified_since, 
+            'status' : unreleased_status,
             'tags' : 'apport-crash' 
             }
+    if modified_since:
+        search_args['modified_since'] = modified_since
+
+    i = 0
+    start_time = time.time()
+    total = 30000 #sum([len(d.searchTasks(**search_args)) for d in launchpad.distributions]) SLOW!
+
     bug_ids = set()
     for distro in launchpad.distributions:
-        import pdb; pdb.set_trace()
+        log.debug("processing bugs for distro: %s" % distro)
         for bug in distro.searchTasks(**search_args):
             bug_id_str = str(bug).split("/")[-1]
+            project_name = str(bug).split("/")[-3]
             if bug_id_str in bug_ids:
+                print bug
+                i += 1
+                continue
+            if not has_stack_trace(bug.bug):
+                log.debug("bug at %s was reported by apport, but doesn't have a stack trace" % bug.web_link)
+                log.debug("bug attachments: %s" % ", ".join([str(a) for a in bug.bug.attachments]))
+                i += 1
                 continue
             bug_ids.add(bug_id_str)
-            log.debug("caching modified bug: %s" % bug_id_str)
-            bug_id_str = str(bug).split("/")[-1]
-            cache_bug(bug, cachedir)
-    log.debug("found %d updated bugs" % len(bug_ids))
+            dpath = "%s/%s/%s" % (cachedir, project_name, bug_id_str)
+            if not os.path.exists(dpath):
+                os.makedirs(dpath)
+            log.debug("caching bug: %s" % dpath)
+            cache_bug(bug, dpath)
 
-    '''
-    for root, dirs, files in os.walk(cachedir, topdown=True):
-        if "launchpad-metadata.txt" in files:
-            log.debug("processing %s" % root)
-        project = root.split("/")[-2]
-        bug_id = root.split("/")[-1]
-        bug = launchpad.bugs[bug_id]
-        try:
-            outfile = open("%s/launchpad-description.txt" % root, "wt")
-            outfile.write(bug.description.encode("UTF-8"))
+            i += 1
+            log.debug("roughly: %d/%d, %f sec remaining" % (i, total, 
+                (time.time()-start_time)/i * (total-i)))
+            sys.stdout.flush()
 
-        except Exception as e:
-            #open(os.path.join(root, 'analysis-error.txt'), "at").write(str(e) + "\n")
-            import pdb; pdb.set_trace()
-            raise e
- 
-    '''
+    log.debug("found %d matching bugs" % len(bug_ids))
+

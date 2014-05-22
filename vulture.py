@@ -20,8 +20,8 @@ if __name__ == "__main__":
     parser.add_option("-l", "--logfile", dest="logfile")
     parser.add_option("-e", "--loglevel", dest="loglevel", default="DEBUG")
     #parser.add_option("-b", "--bucket", dest="bucket", default="evde", help="S3 bucket to use for read/write")
-    parser.add_option("-b", "--bug-cache-directory", dest="bug_cache_dir", default="data/bugs/launchpad", help="Local directory to use as cache for remote bug information (bug info is read/written here)")
-    parser.add_option("-a", "--analysis-cache-directory", dest="analysis_dir", default="data/analysis/launchpad", help="Local directory to use as cache for analysis results (anallysis info is read/written here)")
+    parser.add_option("-c", "--cache-directory", dest="cache_dir", default="data", help="Local directory to use as cache for remote bug information (bug info is read/written here)")
+    parser.add_option("-a", "--analysis-cache-directory", dest="analysis_dir", default="data/analysis", help="Local directory to use as cache for analysis results (anallysis info is read/written here)")
     
     
     (options, args) = parser.parse_args()
@@ -44,19 +44,35 @@ if __name__ == "__main__":
     if len(args) < 1:
         parser.error("Wrong number of arguments")
 
+    bug_cache_dir = os.path.join(options.cache_dir, "bugs", "launchpad")
+    log.debug("bug_cache_dir is %s" % bug_cache_dir)
+
     if args[0] == "analyze":
         from vlib.analyzers import analyze
-        log.info("Analyzing bug cache in directory: %s" % options.bug_cache_dir)
-        analyze(options.bug_cache_dir, options.analysis_dir)
+        log.info("Analyzing bug cache in directory: %s" % bug_cache_dir)
+        analyze(bug_cache_dir, options.analysis_dir)
+    elif args[0] == "build-cache":
+        # cache everything
+        from vlib.launchpad import cache_bugs
+        from vlib.ubuntu import cache_popularity
+        cache_bugs(bug_cache_dir)
+        cache_popularity(os.path.join(options.cache_dir, "popularity"))
     elif args[0] == "build-bug-cache":
+        # cache only bugs
         from vlib.launchpad import cache_bugs
-        cache_bugs(options.bug_cache_dir)
+        cache_bugs(bug_cache_dir)
+    elif args[0] == "build-popularity-cache":
+        # cache only popularity
+        from vlib.ubuntu import cache_popularity
+        cache_popularity(os.path.join(options.cache_dir, "popularity"))
     elif args[0] == "update-cache":
-        # cache info for recently updated bugs
+        # cache info for recently updated bugs, popularity
         from vlib.launchpad import cache_bugs
+        from vlib.ubuntu import popularity
         from datetime import date, timedelta
         modified_since = (date.today()-timedelta(days=1)).strftime("%Y-%m-%d")
-        cache_bugs(options.bug_cache_dir, modified_since, True)
+        cache_bugs(bug_cache_dir, modified_since, True)
+        cache_popularity(os.path.join(options.cache_dir, "popularity"))
     elif args[0] == "report":
         raise NotImplementedError("TODO this should generate a report (static HTML)")
     elif args[0] == "publish":

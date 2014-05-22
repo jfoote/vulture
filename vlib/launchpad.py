@@ -189,4 +189,3 @@ def cache_bugs(cachedir, modified_since=None, force=False):
             sys.stdout.flush()
 
     log.debug("found %d matching bugs" % len(bug_ids))
-

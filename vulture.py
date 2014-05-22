@@ -20,8 +20,8 @@ if __name__ == "__main__":
     parser.add_option("-l", "--logfile", dest="logfile")
     parser.add_option("-e", "--loglevel", dest="loglevel", default="DEBUG")
     #parser.add_option("-b", "--bucket", dest="bucket", default="evde", help="S3 bucket to use for read/write")
-    parser.add_option("-b", "--bug-cache-directory", dest="bug_cache_dir", default="data/bugs", help="Local directory to use as cache for remote bug information (bug info is read/written here)")
-    parser.add_option("-a", "--analysis-cache-directory", dest="analysis_dir", default="data/analysis", help="Local directory to use as cache for analysis results (anallysis info is read/written here)")
+    parser.add_option("-b", "--bug-cache-directory", dest="bug_cache_dir", default="data/bugs/launchpad", help="Local directory to use as cache for remote bug information (bug info is read/written here)")
+    parser.add_option("-a", "--analysis-cache-directory", dest="analysis_dir", default="data/analysis/launchpad", help="Local directory to use as cache for analysis results (anallysis info is read/written here)")
     
     
     (options, args) = parser.parse_args()
@@ -47,17 +47,7 @@ if __name__ == "__main__":
     if args[0] == "analyze":
         from vlib.analyzers import analyze
         log.info("Analyzing bug cache in directory: %s" % options.bug_cache_dir)
-        for root, dirs, files in os.walk(options.bug_cache_dir, topdown=True):
-            if "Disassembly.txt" not in files:
-                log.debug("Disassembly.txt not found for %s" % root)
-                continue
-            log.debug("processing %s" % root)
-            project = root.split("/")[-2]
-            try:
-                print(analyze(root))
-            except Exception as e:
-                log.exception(e)
-                continue
+        analyze(options.bug_cache_dir, options.analysis_dir)
     elif args[0] == "build-bug-cache":
         from vlib.launchpad import cache_bugs
         cache_bugs(options.bug_cache_dir)
@@ -67,6 +57,10 @@ if __name__ == "__main__":
         from datetime import date, timedelta
         modified_since = (date.today()-timedelta(days=1)).strftime("%Y-%m-%d")
         cache_bugs(options.bug_cache_dir, modified_since, True)
+    elif args[0] == "report":
+        raise NotImplementedError("TODO this should generate a report (static HTML)")
+    elif args[0] == "publish":
+        raise NotImplementedError("TODO this should publish static HTML + analysis (and maybe cache) to S3, probably via s3cmd. Maybe should be implemented outside this script ")
     else:
         parser.error("Unable to parse command. args=%s" % str(args))
 

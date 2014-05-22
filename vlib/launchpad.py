@@ -172,7 +172,7 @@ def cache_bugs(cachedir, modified_since=None, force=False):
                 i += 1
                 continue
             bug_ids.add(bug_id_str)
-            dpath = "%s/%s/%s" % (cachedir, project_name, bug_id_str)
+            dpath = "%s/%s" % (cachedir, bug_id_str)
             if not os.path.exists(dpath):
                 os.makedirs(dpath)
             log.debug("caching bug: %s" % dpath)

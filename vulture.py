@@ -60,16 +60,13 @@ if __name__ == "__main__":
             except Exception as e:
                 log.exception(e)
                 continue
-    elif args[0] == "rebuild-bug-cache":
-        cache_bugs(options.bug_cache_dir)
-    elif args[0] == "rebuild-bug-cache-force":
+    elif args[0] == "build-bug-cache":
         cache_bugs(options.bug_cache_dir)
     elif args[0] == "update-cache":
+        # cache info for recently updated bugs
         from datetime import date, timedelta
         modified_since = (date.today()-timedelta(days=1)).strftime("%Y-%m-%d")
-        cache_bugs(options.bug_cache_dir, modified_since)
-        # cache info for recently updated bugs
-        # for bug in launchpad.search(date): download(bug_info)
+        cache_bugs(options.bug_cache_dir, modified_since, True)
     else:
         parser.error("Unable to parse command. args=%s" % str(args))
 

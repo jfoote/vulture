@@ -40,7 +40,7 @@ def cache_project_names(outdir, force=False, batch=300, total=34026):
 
     return projects
 
-def cache_bug_attachments(bug, dpath):
+def cache_bug_attachments(bug, dpath, force=False):
     import subprocess, shlex
     for attachment in bug.attachments:
         try:
@@ -50,7 +50,7 @@ def cache_bug_attachments(bug, dpath):
             if "\"" in path or "'" in path:
                 raise RuntimeError("funny character in path: %s" % path)
             cmd = "wget \"%s\" -O \"%s\"" % (path, fpath)
-            if os.path.exists(fpath):
+            if not force and os.path.exists(fpath):
                 log.info("%s found, skipping %s" % (fpath, cmd))
                 return
             subprocess.check_call(shlex.split(cmd))
@@ -58,10 +58,12 @@ def cache_bug_attachments(bug, dpath):
             log.exception(e)
  
 
-def cache_metadata(bug, bbug, dpath):
+def cache_metadata(bug, bbug, dpath, force=False):
     metadata = get_metadata(bug, bbug)
     path = "%s/vulture.json" % dpath
-    if os.path.exists(path):
+
+    # if not forcing, merge new data into old data
+    if not force and os.path.exists(path):
         log.debug("found existing metadata at %s, merging" % path)
         prev_metadata = json.load(open(path, "rt"))
 
@@ -71,7 +73,6 @@ def cache_metadata(bug, bbug, dpath):
             if k == "project_metadata":
                 for pname, md in v.items():
                     if pname == project_name:
-                        # TODO: add "force" to ignore this check (actually, force should ignore merge altogether)
                         raise RuntimeError("already have metadata for project: %s" % pname)
                     metadata['project_metadata'][pname] = md
             elif prev_metadata[k] != metadata[k]:
@@ -79,10 +80,10 @@ def cache_metadata(bug, bbug, dpath):
 
     json.dump(metadata, open(path, "wt"), indent=4)
 
-def cache_bug(bug, dpath):
+def cache_bug(bug, dpath, force=False):
     bbug = bug.bug
-    cache_metadata(bug, bbug, dpath)
-    cache_bug_attachments(bbug, dpath)
+    cache_metadata(bug, bbug, dpath, force)
+    cache_bug_attachments(bbug, dpath, force)
 
 def get_metadata(pbug, bbug):
     out = {}
@@ -92,7 +93,7 @@ def get_metadata(pbug, bbug):
     fields = ['date_closed', 'related_tasks', 'assignee', 'date_assigned', 'date_left_closed', 'date_fix_committed', 'date_fix_released', 'date_in_progress', 'status', 'bug_target_name', 'importance', 'date_triaged', 'bug_target_display_name', 'milestone', 'target', 'date_confirmed', 'date_left_new', 'bug_watch', 'date_incomplete', 'is_complete', 'web_link']
     for f in fields:
         val = getattr(pbug, f, "")
-        if type(val) == type(""):
+        if getattr(val, 'encode', False):
             val = val.encode("UTF-8")
         else:
             val = str(val).encode("UTF-8")
@@ -105,7 +106,7 @@ def get_metadata(pbug, bbug):
             'date_last_updated', 'tags', 'description', 'target', 'target_name', 'target_display_name']
     for f in fields:
         val = getattr(bbug, f, "")
-        if type(val) == type(""):
+        if getattr(val, 'encode', False):
             val = val.encode("UTF-8")
         else:
             val = str(val).encode("UTF-8")
@@ -113,7 +114,7 @@ def get_metadata(pbug, bbug):
 
     m = re.match("^.*(SIG[A-Z]+).*$", bbug.title)
     if m:
-        out['sigtext'] = sigtext
+        out['sigtext'] = m.groups()[0]
     else:
         out['sigtext'] = "None"
 
@@ -138,7 +139,7 @@ def has_stack_trace(bug):
              return True
      return False
   
-def cache_bugs(cachedir, modified_since=None):
+def cache_bugs(cachedir, modified_since=None, force=False):
 
     search_args = { 
             'status' : unreleased_status,
@@ -155,6 +156,7 @@ def cache_bugs(cachedir, modified_since=None):
     for distro in launchpad.distributions:
         log.debug("processing bugs for distro: %s" % distro)
         for bug in distro.searchTasks(**search_args):
+            # TODO: may want to multi-thread this inner loop, a la downloader
             bug_id_str = str(bug).split("/")[-1]
             project_name = str(bug).split("/")[-3]
             if bug_id_str in bug_ids:
@@ -163,7 +165,7 @@ def cache_bugs(cachedir, modified_since=None):
                 continue
             if not has_stack_trace(bug.bug):
                 log.debug("bug at %s was reported by apport, but doesn't have a stack trace" % bug.web_link)
-                log.debug("bug attachments: %s" % ", ".join([str(a) for a in bug.bug.attachments]))
+                log.debug("bug attachments: %s" % ", ".join([a.title for a in bug.bug.attachments]))
                 i += 1
                 continue
             bug_ids.add(bug_id_str)
@@ -171,7 +173,12 @@ def cache_bugs(cachedir, modified_since=None):
             if not os.path.exists(dpath):
                 os.makedirs(dpath)
             log.debug("caching bug: %s" % dpath)
-            cache_bug(bug, dpath)
+            try:
+                cache_bug(bug, dpath, force)
+            except Exception as e:
+                log.error("ERROR while caching bug %s to %s" % (str(bug), dpath))
+                log.exception(e)
+                raise e # TODO: may want to remove this
 
             i += 1
             log.debug("roughly: %d/%d, %f sec remaining" % (i, total, 

@@ -9,10 +9,10 @@ def cache_popularity(cachedir):
     path = "http://popcon.ubuntu.com/by_inst"
     fpath = "%s/by_inst" % cachedir
     cmd = "wget \"%s\" -O \"%s\"" % (path, fpath)
-    subprocess.check_call(shlex.split(cmd))
+    #subprocess.check_call(shlex.split(cmd))
 
     # parse file into json object
-    out = []
+    out = {}
     fields = ['rank', 'name', 'inst', 'vote', 'old', 'recent', 'no-files']
     for line in open(fpath, "rt").readlines():
         line = line.strip()
@@ -25,5 +25,10 @@ def cache_popularity(cachedir):
             except Exception as e:
                 log.warning("error parsing by_inst; field=%s" % field)
                 log.exception(e)
-        out.append(item)
+        if not item.get('name', False) or not item.get('inst', False):
+            continue
+        if int(item['inst']) < 100: # got all of the popular ones
+            break
+
+        out[item['name']] = item
     json.dump(out, open("%s/popularity.json" % cachedir, "wt"), indent=4)

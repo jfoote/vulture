@@ -45,18 +45,18 @@ if __name__ == "__main__":
         parser.error("Wrong number of arguments")
 
     bug_cache_dir = os.path.join(options.cache_dir, "bugs", "launchpad")
-    log.debug("bug_cache_dir is %s" % bug_cache_dir)
+    popularity_cache_dir = os.path.join(options.cache_dir, "popularity")
 
     if args[0] == "analyze":
         from vlib.analyzers import analyze
         log.info("Analyzing bug cache in directory: %s" % bug_cache_dir)
-        analyze(bug_cache_dir, options.analysis_dir)
+        analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir)
     elif args[0] == "build-cache":
         # cache everything
         from vlib.launchpad import cache_bugs
         from vlib.ubuntu import cache_popularity
         cache_bugs(bug_cache_dir)
-        cache_popularity(os.path.join(options.cache_dir, "popularity"))
+        cache_popularity(popularity_cache_dir)
     elif args[0] == "build-bug-cache":
         # cache only bugs
         from vlib.launchpad import cache_bugs

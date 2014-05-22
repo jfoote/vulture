@@ -39,7 +39,6 @@ if __name__ == "__main__":
     logging.basicConfig()
     log = logging.getLogger()
     log.level = getattr(logging, options.loglevel)
-    print log.level
     log.info(str(options))
 
     #bucket = boto.connect_s3().get_bucket(options.bucket) 
@@ -56,7 +55,7 @@ if __name__ == "__main__":
             log.debug("processing %s" % root)
             project = root.split("/")[-2]
             try:
-                print analyze(root)
+                print(analyze(root))
             except Exception as e:
                 log.exception(e)
                 continue

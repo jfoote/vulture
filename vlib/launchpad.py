@@ -46,6 +46,10 @@ def cache_bug_attachments(bug, dpath, force=False):
         try:
             path = "%s/+files/%s" % (attachment.web_link, attachment.title)
             fpath = "%s/%s" % (dpath, attachment.title)
+            # no launchpadlib for python3, so no shlex.quote :( hack:
+            for p in [path, fpath]:
+                for char in ["<", ">", " ", "(", ")"]:
+                    p = p.replace(char, "\%s" % char)
             log.debug("path=%s, fpath=%s" % (path, fpath))
             if "\"" in path or "'" in path:
                 raise RuntimeError("funny character in path: %s" % path)
@@ -160,7 +164,6 @@ def cache_bugs(cachedir, modified_since=None, force=False):
             bug_id_str = str(bug).split("/")[-1]
             project_name = str(bug).split("/")[-3]
             if bug_id_str in bug_ids:
-                print bug
                 i += 1
                 continue
             if not has_stack_trace(bug.bug):

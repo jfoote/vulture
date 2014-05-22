@@ -50,7 +50,11 @@ if __name__ == "__main__":
     if args[0] == "analyze":
         from vlib.analyzers import analyze
         log.info("Analyzing bug cache in directory: %s" % bug_cache_dir)
-        analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir)
+        scores = analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir)
+        # TODO: stopped here: 
+        # at this point freshness and exploitability scores are being calculated and returned, though individual analysis is not yet being written to disk as JSON files
+        # so if i dump scores now at a minimum the report could rank order bugs and link to their launchpad pages; need some additional functionality though, probably
+        # like clicking a score to see how it was calculated
     elif args[0] == "build-cache":
         # cache everything
         from vlib.launchpad import cache_bugs

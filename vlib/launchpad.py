@@ -181,7 +181,6 @@ def cache_bugs(cachedir, modified_since=None, force=False):
     for distro in launchpad.distributions:
         log.debug("processing bugs for distro: %s" % distro)
         for bug in distro.searchTasks(**search_args):
-            # TODO: may want to multi-thread this inner loop, a la downloader
             bug_id_str = str(bug).split("/")[-1]
             project_name = str(bug).split("/")[-3]
             if bug_id_str in bug_ids:

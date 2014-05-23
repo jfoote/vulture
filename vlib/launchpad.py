@@ -40,27 +40,48 @@ def cache_project_names(outdir, force=False, batch=300, total=34026):
 
     return projects
 
+def download_attachment(attachment, dpath, force=False):
+    import subprocess, shlex
+    try:
+        path = "%s/+files/%s" % (attachment.web_link, attachment.title)
+        fpath = "%s/%s" % (dpath, attachment.title)
+        # no launchpadlib for python3, so no shlex.quote :( hack:
+        for p in [path, fpath]:
+            for char in ["<", ">", " ", "(", ")"]:
+                p = p.replace(char, "\%s" % char)
+        log.debug("path=%s, fpath=%s" % (path, fpath))
+        if "\"" in path or "'" in path:
+            raise RuntimeError("funny character in path: %s" % path)
+        cmd = "wget \"%s\" -O \"%s\"" % (path, fpath)
+        if not force and os.path.exists(fpath):
+            log.info("%s found, skipping %s" % (fpath, cmd))
+            return
+        subprocess.check_call(shlex.split(cmd))
+    except Exception as e:
+        log.warning("exception in thread:")
+        log.exception(e)
+
 def cache_bug_attachments(bug, dpath, force=False):
     import subprocess, shlex
+    from threading import Thread
+    from functools import partial
+
+    # download attachments in parallel
+    threads = []
     for attachment in bug.attachments:
         try:
-            path = "%s/+files/%s" % (attachment.web_link, attachment.title)
-            fpath = "%s/%s" % (dpath, attachment.title)
-            # no launchpadlib for python3, so no shlex.quote :( hack:
-            for p in [path, fpath]:
-                for char in ["<", ">", " ", "(", ")"]:
-                    p = p.replace(char, "\%s" % char)
-            log.debug("path=%s, fpath=%s" % (path, fpath))
-            if "\"" in path or "'" in path:
-                raise RuntimeError("funny character in path: %s" % path)
-            cmd = "wget \"%s\" -O \"%s\"" % (path, fpath)
-            if not force and os.path.exists(fpath):
-                log.info("%s found, skipping %s" % (fpath, cmd))
-                return
-            subprocess.check_call(shlex.split(cmd))
+            if "retraced" in attachment.web_link:
+                # these don't download correctly, and we don't use them presently
+                continue
+            t = Thread(target=partial(download_attachment, attachment, dpath, force))
+            t.start()
+            threads.append(t)
         except Exception as e:
             log.exception(e)
- 
+    log.debug("spawned %d threads" % len(threads))
+
+    # wait for threads to exit
+    [t.join() for t in threads]
 
 def cache_metadata(bug, bbug, dpath, force=False):
     metadata = get_metadata(bug, bbug)

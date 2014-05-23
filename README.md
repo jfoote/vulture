@@ -3,7 +3,18 @@ vulture
 
 Analyzes open source bug trackers for interesting vulnerabilities
 
-## TODO: will sort by "interestingness," broken into these categories:
+# TODO (latest):
+- 'analyze' does this:
+   - generates a json file for each bug that shows more detailed analysis 
+       - should correspond to a per-bug analysis page
+   - generates a summary json file 
+       - should correspond to the main page, made into a table by dynatable
+- get a main page working with dynatable
+   - intially just draw a table, but we should be able to update dynamically based on user tweaks to weights
+   - the idea is to show the values for each bug on the front page so the user can tune up the bugs they want
+   - may want to give more bg on the bug on the main page.. project titles, etc., but don't go overboard (it needs to fit on the width of a screen) (could make column names short, maybe)
+
+## will sort by "interestingness," broken into these categories:
 
 - exploitability
 

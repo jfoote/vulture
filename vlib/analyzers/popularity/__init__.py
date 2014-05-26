@@ -13,6 +13,7 @@ def get_scores(bug_cache_dir, popularity_cache_dir):
     else:
         score = max_inst/2
     '''
+    log.debug("scoring")
 
     # load popularity (big) into memory
     popularity = json.load(open("%s/popularity.json" % popularity_cache_dir, "rt"))
@@ -42,6 +43,7 @@ def get_scores(bug_cache_dir, popularity_cache_dir):
             else:
                 scores[bug_id_str][field] = maxs[field] - sums_by_popfield[field]
 
+    log.debug("done scoring")
     return scores
 
 def analyze_bug(popularity, results, bugdir): # results must be mutable (passed by ref)

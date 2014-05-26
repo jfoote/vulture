@@ -95,7 +95,7 @@ def get_scores(bug_cache_dir):
     that will be shown on each bug-specific page: freshness "tags", freshness ranks
     '''
     from vlib.analyzers.tools import call_for_each_bug
-
+    log.debug("scoring")
 
     # get data we'll score on for each bug in bug_cache_dir (stored to results)
     metadata = {}
@@ -127,6 +127,8 @@ def get_scores(bug_cache_dir):
         bscores['date_created'] = date_created_ranks.get(bug_id_str, None)
         bscores['date_last_updated'] = date_mod_ranks.get(bug_id_str, None)
         scores[bug_id_str] = bscores
+
+    log.debug("done scoring")
 
     return scores
 

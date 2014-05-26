@@ -7,6 +7,7 @@ def call_for_each_bug(bug_cache_dir, analyzer_func):
     i = 0
     for root, dirs, files in os.walk(bug_cache_dir, topdown=True):
         log.debug("processing %s (#%d)" % (root, i))
+        i += 1
 
         if "vulture.json" not in files:
             continue

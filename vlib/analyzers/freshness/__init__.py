@@ -114,7 +114,7 @@ def get_scores(bug_cache_dir):
         for field, project_md in bug_md['project_metadata'].items():
             status = project_md['status']
             score = score_by_status[status]
-            if best_score == None or score < best:
+            if best_score == None or score < best_score:
                 best_score = score
         status_scores[bug_id_str] = best_score
 

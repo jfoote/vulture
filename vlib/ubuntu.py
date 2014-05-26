@@ -2,14 +2,18 @@ import os, subprocess, shlex, json, logging
 
 log = logging.getLogger()
 
-def cache_popularity(cachedir):
-    # download file; could get zipped version
-    if not os.path.exists(cachedir):
-        os.makedirs(cachedir)
-    path = "http://popcon.ubuntu.com/by_inst"
+def cache_popularity(cachedir, force=False):
+
     fpath = "%s/by_inst" % cachedir
-    cmd = "wget \"%s\" -O \"%s\"" % (path, fpath)
-    #subprocess.check_call(shlex.split(cmd))
+    if not force and os.path.exists(fpath):
+        log.debug("%s exists and force=%s, skipping download" % (fpath, force))
+    else:
+        # download file; could get zipped version
+        if not os.path.exists(cachedir):
+            os.makedirs(cachedir)
+        path = "http://popcon.ubuntu.com/by_inst"
+        cmd = "wget \"%s\" -O \"%s\"" % (path, fpath)
+        subprocess.check_call(shlex.split(cmd)) 
 
     # parse file into json object
     out = {}
@@ -31,4 +35,4 @@ def cache_popularity(cachedir):
             break
 
         out[item['name']] = item
-    json.dump(out, open("%s/popularity.json" % cachedir, "wt"), indent=4)
+    json.dump(out, open("%s/popularity.json", "wt"), indent=4)

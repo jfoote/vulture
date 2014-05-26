@@ -60,7 +60,7 @@ if __name__ == "__main__":
         from vlib.launchpad import cache_bugs
         from vlib.ubuntu import cache_popularity
         cache_bugs(bug_cache_dir)
-        cache_popularity(popularity_cache_dir)
+        cache_popularity(popularity_cache_dir, False)
     elif args[0] == "build-bug-cache":
         # cache only bugs
         from vlib.launchpad import cache_bugs

@@ -81,3 +81,23 @@ def analyze_bug(popularity, results, bugdir): # results must be mutable (passed 
     results[bug_id_str] = sums_by_project
 
 
+def get_insts(pop_dict, metadata):
+    insts = 0
+    for pn in bugmd['project_metadata'].keys():
+        pop = pop_dict.get(pn, None)
+        if pop:
+            insts += int(inst)
+    return insts
+
+def get(metadata, pop_dict):
+    sum_inst = 0
+    pops = {}
+    for pn in metadata['project_metadata'].keys():
+        pop = pop_dict.get(pn, None)
+        if not pop:
+            log.info("%s not found in popcon dataset" % pn)
+            continue
+        pops[pn] = pop
+        sum_inst += int(pop['inst'])
+    pops['sum_inst'] = sum_inst
+    return pops

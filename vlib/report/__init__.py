@@ -18,7 +18,7 @@ def publish(analysis_dir):
     key.set_contents_from_filename(path)
     key.set_canned_acl("public-read")
 
-    return # TODO delete this!
+    #return # TODO delete this!
 
     # publish analysis data
     # gzip big json file

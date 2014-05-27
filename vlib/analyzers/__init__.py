@@ -4,7 +4,7 @@ from functools import partial
 
 log = logging.getLogger()
 
-from vlib.analyzers import exploitability, freshness, popularity
+from vlib.analyzers import exploitability, freshness, popularity, reproducibility
 from vlib.analyzers.tools import call_for_each_bug
 
 def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir):
@@ -21,7 +21,7 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
     pop = popularity.get(metadata, popularity_dict)
     fresh = freshness.get(metadata)
     exp = exploitability.get(bugdir)
-    # repro = ... TODO
+    repro = reproducibility.get(metadata, bugdir)
     combined = {
             'popularity' : pop,
             'freshness' : fresh,

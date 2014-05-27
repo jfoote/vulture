@@ -80,7 +80,8 @@ if __name__ == "__main__":
     elif args[0] == "report":
         raise NotImplementedError("TODO this should generate a report (static HTML)")
     elif args[0] == "publish":
-        raise NotImplementedError("TODO this should publish static HTML + analysis (and maybe cache) to S3, probably via s3cmd. Maybe should be implemented outside this script ")
+        from vlib.report import publish
+        publish(options.analysis_dir)
     else:
         parser.error("Unable to parse command. args=%s" % str(args))
 

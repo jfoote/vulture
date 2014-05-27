@@ -17,7 +17,12 @@ def get(metadata, bugdir):
     for line in metadata['description'].splitlines():
         if "proccmdline" in line.lower():
             cmdline = ":".join(line.split(":")[1:]).strip()
-            toks = shlex.split(cmdline)
+            try:
+                toks = shlex.split(cmdline)
+            except ValueError as e:
+                log.error("error while parsing cmdline: %s" % cmdline)
+                log.exception(e)
+                continue
             if len(toks) > 1 and "//" in toks[-1] or "." in toks[-1]: # fixme
                 uri = toks[-1].strip()
     indicators['cmdline'] = cmdline

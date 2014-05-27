@@ -49,7 +49,7 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
     bugrow['exp_rank'] = exp.ranking[0] if exp else 100
     bugrow['exp_tags'] = ',<br>'.join([t.split()[0] for t in exp['tags']]) if exp else ""
 
-    bugrow['file_arg'] = repro['cmdline_uri']
+    bugrow['file_arg'] = repro['cmdline_uri'] if bool(repro['cmdline_uri']) else "None"
     bugrow['testcases'] = "<br>,".join(repro['files'])
     bugrow['repro_score'] = len(repro['files']) + int(bool(repro['cmdline_uri']))
     

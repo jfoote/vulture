@@ -25,7 +25,8 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
     combined = {
             'popularity' : pop,
             'freshness' : fresh,
-            'exploitability' : exp
+            'exploitability' : exp,
+            'reproducibility' : repro
             }
 
     # dump analysis for this bug 
@@ -37,13 +38,21 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
     bugrow = {}
     bugrow['id'] = bug_id_str
     bugrow['title'] = "<a href='%s'>%s</a>" % (metadata['web_link'], metadata['title'])
-    bugrow['popcon_installs'] = pop['sum_inst']
+
+    bugrow['installs'] = pop['sum_inst']
+
     bugrow['date_modified'] = fresh['date_last_updated']
     bugrow['date_created'] = fresh['date_created']
     bugrow['status'] = "<br>".join(["%s: %s" % (pn, md['status']) for pn, md in fresh['project_metadata'].items()])
     bugrow['status_score'] = fresh['best_status_score']
+
     bugrow['exp_rank'] = exp.ranking[0] if exp else 100
     bugrow['exp_tags'] = ',<br>'.join([t.split()[0] for t in exp['tags']]) if exp else ""
+
+    bugrow['file_arg'] = repro['cmdline_uri']
+    bugrow['testcases'] = "<br>,".join(repro['files'])
+    bugrow['repro_score'] = len(repro['files']) + int(bool(repro['cmdline_uri']))
+    
     summary.append(bugrow)
 
 def analyze(bug_cache_dir, analysis_dir, popularity_cache_dir, limit=None):

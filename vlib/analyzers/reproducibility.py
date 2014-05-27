@@ -4,39 +4,49 @@ from tools import get_category_by_status
 
 log = logging.getLogger()
 
+meta_files = ['Disassembly.txt', 'Stacktrace.txt', 'Registers.txt', 
+        'SegvAnalysis.txt', 'ProcMaps.txt', "BootLog" , "CoreDump", 
+        "BootDmesg.gz", "syslog"]
+
 def get(metadata, bugdir):
-    sum_inst = 0
     indicators = {}
+
+    # look for file arg; this needs work TODO
+    cmdline = None
+    uri = None
     for line in metadata['description'].splitlines():
         if "proccmdline" in line.lower():
-            indicators['ProcCmdLine'] = ":".join(line.split(":")[1:]).strip()
-            break
-    else:
-        log.info("No ProcCmdLine for %s" % bugdir)
-        print "\n".join(metadata['description'].splitlines())
-        import pdb; pdb.set_trace()
+            cmdline = ":".join(line.split(":")[1:]).strip()
+            toks = shlex.split(cmdline)
+            if len(toks) > 1 and "//" in toks[-1] or "." in toks[-1]: # fixme
+                uri = toks[-1].strip()
+    indicators['cmdline'] = cmdline
+    indicators['cmdline_uri'] = uri
 
+    # look for interesting attachments; ugly
+    interesting_files = []
     for f in os.listdir(bugdir):
         fpath = os.path.join(bugdir, f)
         if not os.path.isfile(fpath):
             continue
-        if "BootLog" in f or "CoreDump" in f or "BootDmesg.gz" in f:
-            continue
-        out = subprocess.check_output(["file", fpath])
-        ftype = out.split(":")[-1]
-        if ftype.strip() == "empty":
-            continue
-        
-        for tstr in ["ASCII", "text", "core file"]:
-            if tstr in ftype:
+        for fn in meta_files:
+            if fn.lower() in f.lower():
                 break
         else:
-            # only runs if we didn't break, i.e., this might be interesting
-            print out
-            import pdb; pdb.set_trace()
+            # no break in loop above, i.e. still interested
+            out = subprocess.check_output(["file", fpath])
+            ftype = out.split(":")[-1]
+            if ftype.strip() == "empty":
+                continue
+            
+            for tstr in ["ASCII", "text", "core file"]:
+                if tstr in ftype:
+                    break
+            else:
+                # only runs if we didn't break, i.e., this might be interesting
+                interesting_files.append(f)
+    indicators['files'] = interesting_files
 
-
-        
-
+    # TODO: look for recv, etc. in stacks (shoudl this be in exploitability maybe (remote?))
 
     return indicators

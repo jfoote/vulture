@@ -48,13 +48,12 @@ if __name__ == "__main__":
     popularity_cache_dir = os.path.join(options.cache_dir, "popularity")
 
     if args[0] == "analyze":
+        limit = None
+        if len(args) > 1:
+            limit = int(args[1])
         from vlib.analyzers import analyze
         log.info("Analyzing bug cache in directory: %s" % bug_cache_dir)
-        scores = analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir)
-        # TODO: stopped here: 
-        # at this point freshness and exploitability scores are being calculated and returned, though individual analysis is not yet being written to disk as JSON files
-        # so if i dump scores now at a minimum the report could rank order bugs and link to their launchpad pages; need some additional functionality though, probably
-        # like clicking a score to see how it was calculated
+        scores = analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir, limit)
     elif args[0] == "build-cache":
         # cache everything
         from vlib.launchpad import cache_bugs
@@ -80,8 +79,11 @@ if __name__ == "__main__":
     elif args[0] == "report":
         raise NotImplementedError("TODO this should generate a report (static HTML)")
     elif args[0] == "publish":
+        html_only = False
+        if len(args) > 1 and args[1] == 'html':
+            html_only = True
         from vlib.report import publish
-        publish(options.analysis_dir)
+        publish(options.analysis_dir, html_only)
     else:
         parser.error("Unable to parse command. args=%s" % str(args))
 

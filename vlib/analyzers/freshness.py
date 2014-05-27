@@ -2,41 +2,7 @@ import logging
 
 log = logging.getLogger()
 
-def get_score_by_status(in_status):
-    # sort bug statuses for scoring
-    status_by_category = {
-            'fresh': [
-                "New",  
-                "Opinion", 
-                "Confirmed", ],
-            'wip' : [
-                "Triaged", 
-                "Incomplete (with response)", 
-                "Incomplete (without response)", 
-                "Incomplete",
-                "In Progress", ],
-            'fixed' : [
-                "Fix Committed", 
-                "Fix Released", ], 
-            'abandoned' : [
-                "Invalid", 
-                "Won't Fix", 
-                "Expired", ]
-            }
-    
-    score_by_category = {
-            'fresh' : 1,
-            'wip' : 2,
-            'abandoned' : 3,
-            'fixed': 4
-            }
-    
-    category_by_status = {}
-    for cat, stats in status_by_category.items():
-        for stat in stats:
-            category_by_status[stat] = cat
-    score_by_status = {status:score_by_category[cat] for status, cat in category_by_status.items()}
-    return score_by_status[in_status]
+from tools import get_score_by_status
 
 def get(metadata):
 

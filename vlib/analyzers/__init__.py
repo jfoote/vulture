@@ -33,21 +33,20 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
     json.dump(combined, open("%s/analysis.json" % out_dir, "wt"), indent=4)
 
     # add this bug to summary
-    metadata = json.load(open("%s/vulture.json" % bugdir, "rt"))
-
+    # make a dynatable-ready json dict row
     bugrow = {}
     bugrow['id'] = bug_id_str
-    bugrow['title'] = metadata['title']
-    bugrow['web_link'] = metadata['web_link']
+    bugrow['title'] = "<a href='%s'>%s</a>" % (metadata['web_link'], metadata['title'])
     bugrow['popcon_installs'] = pop['sum_inst']
     bugrow['date_modified'] = fresh['date_last_updated']
     bugrow['date_created'] = fresh['date_created']
-    bugrow['status'] = fresh['best_status']
+    bugrow['status'] = "<br>".join(["%s: %s" % (pn, md['status']) for pn, md in fresh['project_metadata'].items()])
     bugrow['status_score'] = fresh['best_status_score']
-    bugrow['exp_rank'] = exp.ranking[0] if exp else None
+    bugrow['exp_rank'] = exp.ranking[0] if exp else 100
+    bugrow['exp_tags'] = ',<br>'.join([t.split()[0] for t in exp['tags']]) if exp else ""
     summary.append(bugrow)
 
-def analyze(bug_cache_dir, analysis_dir, popularity_cache_dir):
+def analyze(bug_cache_dir, analysis_dir, popularity_cache_dir, limit=None):
     '''
     This function should cache a JSON object corresponding to the
     data that will be used on index.html: bug_id, bug_title, <metric ranks>
@@ -56,7 +55,7 @@ def analyze(bug_cache_dir, analysis_dir, popularity_cache_dir):
     popularity_dict = json.load(open("%s/popularity.json" % popularity_cache_dir, "rt"))
     summary = []
     call_for_each_bug(bug_cache_dir, 
-            partial(store_analysis, summary, bug_cache_dir, analysis_dir, popularity_dict))
+            partial(store_analysis, summary, bug_cache_dir, analysis_dir, popularity_dict), limit)
 
     # store summary for all bugs 
     json.dump(summary, open("%s/summary.json" % analysis_dir, "wt"), indent=4)

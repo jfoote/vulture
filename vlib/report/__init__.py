@@ -1,6 +1,6 @@
 import boto, os, gzip
 
-def publish(analysis_dir):
+def publish(analysis_dir, html_only=False):
     bucket = boto.connect_s3().get_bucket("vulture88")
 
     # note that order is important below:
@@ -18,7 +18,8 @@ def publish(analysis_dir):
     key.set_contents_from_filename(path)
     key.set_canned_acl("public-read")
 
-    #return # TODO delete this!
+    if html_only: # TODO; replace this option with something more flexible
+        return
 
     # publish analysis data
     # gzip big json file

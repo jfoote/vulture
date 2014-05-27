@@ -24,17 +24,18 @@
 
 
 
-<table id="my-final-table">
+<table id="my-final-table" class="table table-bordered">
   <thead>
     <th>id</th>
     <th>title</th>
     <th>popcon_installs</th>
-    <th>exp_rank</th>
+    <th data-dynatable-sorts="exp_rank">exp_tags</th>
+    <th style="display: none">exp_rank</th>
     <th>date_modified</th>
-    <th>date_created</th>
-    <th>status_score</th>
-    <th>status</th>
-    <th>web_link</th>
+    <th data-dynatable-sorts="status_score">status</th>
+    <th style="display: none">status_score</th>
+
+    
   </thead>
   <tbody>
   </tbody>
@@ -42,8 +43,6 @@
 
 <script>
 $.getJSON( "summary.json", function( data ) {
-        console.log(data)
-        debugger;
         $('#my-final-table').dynatable({
             dataset: {
                 records: data

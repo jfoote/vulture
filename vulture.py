@@ -67,13 +67,13 @@ if __name__ == "__main__":
     elif args[0] == "build-popularity-cache":
         # cache only popularity
         from vlib.ubuntu import cache_popularity
-        cache_popularity(os.path.join(options.cache_dir, "popularity"))
+        cache_popularity(os.path.join(options.cache_dir, "popularity"), True)
     elif args[0] == "update-cache":
         # cache info for recently updated bugs, popularity
         from vlib.launchpad import cache_bugs
-        from vlib.ubuntu import popularity
+        from vlib.ubuntu import cache_popularity
         from datetime import date, timedelta
-        modified_since = (date.today()-timedelta(days=1)).strftime("%Y-%m-%d")
+        modified_since = (date.today()-timedelta(days=7)).strftime("%Y-%m-%d")
         cache_bugs(bug_cache_dir, modified_since, True)
         cache_popularity(os.path.join(options.cache_dir, "popularity"))
     elif args[0] == "report":

@@ -4,9 +4,11 @@ from tools import get_category_by_status
 
 log = logging.getLogger()
 
-meta_files = ['Disassembly.txt', 'Stacktrace.txt', 'Registers.txt', 
-        'SegvAnalysis.txt', 'ProcMaps.txt', "BootLog" , "CoreDump", 
-        "BootDmesg.gz", "syslog"]
+meta_files = ['Disassembly', 'Stacktrace', 'Registers', 
+        'SegvAnalysis', 'ProcMaps', "BootLog" , "CoreDump", 
+        "BootDmesg", "syslog", "UbiquityDebug.gz", "Casper.gz",
+        "UbiquityPartman.gz", "UbiquityDm.gz", "GdmLog", "XorgLog"
+        "log", "Log"]
 
 def get(metadata, bugdir):
     indicators = {}

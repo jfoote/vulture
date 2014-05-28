@@ -51,7 +51,7 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
 
     bugrow['file_arg'] = repro['cmdline_uri'] if bool(repro['cmdline_uri']) else "None"
     bugrow['testcases'] = "<br>,".join(repro['files'])
-    bugrow['repro_score'] = len(repro['files']) + int(bool(repro['cmdline_uri']))
+    bugrow['repro_score'] = int(bool(repro['files'])) + int(bool(repro['cmdline_uri']))
     
     summary.append(bugrow)
 

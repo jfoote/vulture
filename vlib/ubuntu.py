@@ -35,4 +35,4 @@ def cache_popularity(cachedir, force=False):
             break
 
         out[item['name']] = item
-    json.dump(out, open("%s/popularity.json", "wt"), indent=4)
+    json.dump(out, open("%s/popularity.json" % cachedir, "wt"), indent=4)

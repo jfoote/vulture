@@ -23,8 +23,9 @@ def get(metadata, bugdir):
                 log.error("error while parsing cmdline: %s" % cmdline)
                 log.exception(e)
                 continue
-            if len(toks) > 1 and "//" in toks[-1] or "." in toks[-1]: # fixme
-                uri = toks[-1].strip()
+            if len(toks) > 1:
+                if ("//" in toks[-1]) or ("." in toks[-1]):
+                    uri = toks[-1].strip()
     indicators['cmdline'] = cmdline
     indicators['cmdline_uri'] = uri
 

@@ -22,6 +22,7 @@ Analyzes open source bug trackers for interesting vulnerabilities
 - fix bug: bugs in vulture are not associated with all of their projects, only one
 - generate and merge in "default handler" database (could use true/false, as well as ProcCmd from launcher; if ProcCmd/etc. is a big help could mine launches from apt repos)
 - add better search fields, etc. to dynatable page (also make sure GA is working)
+- add ubuntu version to fields (filterable), if possible
 
 # Design stuff
 
@@ -70,3 +71,12 @@ Analyzes open source bug trackers for interesting vulnerabilities
 - how apport does exploitability analysis can be found via 'apt-get source apport' and then look for parse\_segv.py
     - confuses src/dst at times (is not opcode aware)
     - generally not too great
+
+### random notes
+ubuntu@ip-10-185-221-76:~/vulture$ find data/bugs/launchpad -name "vulture.json" -exec grep -l "Package:" {} \; | wc -l
+18638
+ubuntu@ip-10-185-221-76:~/vulture$ find data/bugs/launchpad -name "vulture.json" | wc -l
+18650
+ubuntu@ip-10-185-221-76:~/vulture$ find data/bugs/launchpad -name "vulture.json" -exec grep -li "Binary package hint:" {} \; | wc -l
+11689
+

@@ -36,3 +36,39 @@ def cache_popularity(cachedir, force=False):
 
         out[item['name']] = item
     json.dump(out, open("%s/popularity.json" % cachedir, "wt"), indent=4)
+
+def cache_desktop_entries(cachedir, force=False):
+    import subprocess, shlex
+
+    # get list of desktop entries from apt-file
+    #subprocess.check_call(shlex.split("apt-file update"))
+    print os.getcwd()
+    out = subprocess.check_output("apt-file search desktop | grep /usr/share/applications", shell=True)
+    pkgs = {}
+    for line in out.splitlines():
+        pkg = line.split(":")[0]
+        fn = line.split("/")[-1]
+        pkgs[pkg] = fn
+
+    failures = []
+    if not os.path.exists(cachedir):
+        os.makedirs(cachedir)
+    tpath = "%s/tmp-src" % cachedir 
+    for pkg, filename in pkgs.items():
+        if not os.path.exists(tpath):
+            os.makedirs(tpath)
+        try:
+            subprocess.check_call(shlex.split("apt-get source %s" % pkg), cwd=tpath)
+            subprocess.check_call("cp `find %s -name \"%s*\"` %s" % (tpath, filename, cachedir), shell=True)
+        except Exception as e:
+            log.exception(e)
+            failures.append((pkg, filename))
+        finally:
+            if os.path.exists(tpath):
+                subprocess.check_call(shlex.split("rm -rf %s" % tpath))
+
+    for pkg, filename in failures:
+        log.warning("failed to get desktop entry for %s: %s" % (pkg, filename))
+
+
+

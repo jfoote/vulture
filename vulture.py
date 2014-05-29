@@ -68,6 +68,10 @@ if __name__ == "__main__":
         # cache only popularity
         from vlib.ubuntu import cache_popularity
         cache_popularity(os.path.join(options.cache_dir, "popularity"), True)
+    elif args[0] == "build-desktop-entry-cache":
+        # cache only desktop entries
+        from vlib.ubuntu import cache_desktop_entries
+        cache_desktop_entries(os.path.join(options.cache_dir, "desktop-entries"), True)
     elif args[0] == "update-cache":
         # cache info for recently updated bugs, popularity
         from vlib.launchpad import cache_bugs

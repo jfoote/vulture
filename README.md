@@ -3,25 +3,39 @@ vulture
 
 Analyzes open source bug trackers for interesting vulnerabilities
 
-# TODO (latest):
+# Status stuff
+
+## Some things that are done
 - 'analyze' does this:
-   - generates a json file for each bug that shows more detailed analysis 
-       - should correspond to a per-bug analysis page
-   - generates a summary json file 
-       - should correspond to the main page, made into a table by dynatable
-- get a main page working with dynatable
-   - intially just draw a table, but we should be able to update dynamically based on user tweaks to weights
-   - the idea is to show the values for each bug on the front page so the user can tune up the bugs they want
-   - may want to give more bg on the bug on the main page.. project titles, etc., but don't go overboard (it needs to fit on the width of a screen) (could make column names short, maybe)
+    - generates a json file for each bug that shows more detailed analysis 
+        - should correspond to a per-bug analysis page
+    - generates a summary json file 
+        - should correspond to the main page, made into a table by dynatable
+- 'publish' does this:
+    - copies the summary + report HTML to s3
+
+## TODOs
+- fix "ubuntu" project parsing
+    - ubunut not found in popcon -- bad sign
+- add recv/etc. checks to vulture
+- debug existing issues
+- fix bug: bugs in vulture are not associated with all of their projects, only one
+- generate and merge in "default handler" database (could use true/false, as well as ProcCmd from launcher; if ProcCmd/etc. is a big help could mine launches from apt repos)
+- add better search fields, etc. to dynatable page (also make sure GA is working)
+
+# Design stuff
+
+## Guidelines
+- the idea is to show the values for each bug on the front page so the user can tune up the bugs they want
+- may want to give more bg on the bug on the main page.. project titles, etc., but don't go overboard (it needs to fit on the width of a screen) (could make column names short, maybe)
 
 ## will sort by "interestingness," broken into these categories:
 
 - exploitability
-
-- remotely exploitable
-    - handles untrusted input
-    - recv/ libc::open/libc::open64 in crashing backtrace
-    - " / " / " in any backtrace
+    - remotely exploitable
+        - handles untrusted input
+        - recv/ libc::open/libc::open64 in crashing backtrace
+        - " / " / " in any backtrace
 
 - reproducibility
     - input file is attached to bug tracker
@@ -42,15 +56,6 @@ Analyzes open source bug trackers for interesting vulnerabilities
 ## other plans
 - don't worry about users/editing -- leave that to launchpad, bugzilla, etc. (why re-invent the wheel?)
 - should be able to be run nightly to generate report/publish to website
-
-## tentative file layout
-- vulture.py
-- lib/
-    - analyzers/
-        - exploitabiliity/
-        - freshness/
-        - popularity/
-        - reproducibility/
 
 ## big wants
 - Red Hat bugzilla integration; [looks like ABRT's backtrace file supplies enough for exploitability analysis](https://bugzilla.redhat.com/show_bug.cgi?id=1048457)

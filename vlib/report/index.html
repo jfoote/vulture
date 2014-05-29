@@ -1,4 +1,11 @@
-    <link rel="stylesheet" media="all" href="https://s3.amazonaws.com/dynatable-docs-assets/css/reset.css" />
+<!-- jfoote.github.io -->
+
+<p align="center"><font face="courier">VULTURE</font></p>
+
+<p>Click the header rows below to sort by each column. Click a header once for ascending, again for descending, and again to stop sorting by that column. Hold shift and click a second row to add secondary sorting, and so on.
+</p>
+
+<link rel="stylesheet" media="all" href="https://s3.amazonaws.com/dynatable-docs-assets/css/reset.css" />
     <link rel="stylesheet" media="all" href="https://s3.amazonaws.com/dynatable-docs-assets/css/bootstrap-2.3.2.min.css" />
     <link rel="stylesheet" media="all" href="https://s3.amazonaws.com/dynatable-docs-assets/css/application.css" />
     <link rel="stylesheet" media="all" href="https://s3.amazonaws.com/dynatable-docs-assets/css/project.css" />
@@ -22,7 +29,16 @@
     
     <script type='text/javascript' src='https://s3.amazonaws.com/dynatable-docs-assets/js/highcharts.js'></script>
 
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+  ga('create', 'UA-47682504-3', 'auto');
+    ga('send', 'pageview');
+
+    </script>
 
 <table id="my-final-table" class="table table-bordered">
   <thead>
@@ -43,6 +59,7 @@
   <tbody>
   </tbody>
 </table>
+<p align="center"><a href="https://jfoote.github.io">jfoote.github.io</a></p>
 
 <script>
 $.getJSON( "summary.json", function( data ) {

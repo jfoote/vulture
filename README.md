@@ -36,9 +36,17 @@ Analyzes open source bug trackers for interesting vulnerabilities
 
 - exploitability
     - remotely exploitable
+        - reasonining:
+            1. "is this remotely exploitable" becomes..
+            2. "was this bug triggered by handling input that is considered untrusted" and/or 
+            3. "does this program handle untrusted input"
         - handles untrusted input
-        - recv/ libc::open/libc::open64 in crashing backtrace
-        - " / " / " in any backtrace
+            - takes file param +1
+            - handles mime types +1 for each
+            - is default handler +1
+            - is default handler and is installed by default +5
+            - recv/ libc::open/libc::open64 in crashing backtrace
+            - recv/open in any backtrace
 
 - reproducibility
     - input file is attached to bug tracker
@@ -74,11 +82,10 @@ Analyzes open source bug trackers for interesting vulnerabilities
     - confuses src/dst at times (is not opcode aware)
     - generally not too great
 
-### random notes
-ubuntu@ip-10-185-221-76:~/vulture$ find data/bugs/launchpad -name "vulture.json" -exec grep -l "Package:" {} \; | wc -l
-18638
-ubuntu@ip-10-185-221-76:~/vulture$ find data/bugs/launchpad -name "vulture.json" | wc -l
-18650
-ubuntu@ip-10-185-221-76:~/vulture$ find data/bugs/launchpad -name "vulture.json" -exec grep -li "Binary package hint:" {} \; | wc -l
-11689
-
+## making analyze self-explanatory, automatically
+- the idea here is to allow a user to click on something on the per-bug page that will lead them through the logic used to arrive at conclusions
+    - was originally thinking of exploitability 'tags', though for this to be worth the effort this should be generalizble
+- could instrument execution to record traces ; see trace.py
+    - records just calls (with args) and conditionals (with args)
+    - after i got it working i looked at the output and decided it needed context
+- record/replay python execution traces

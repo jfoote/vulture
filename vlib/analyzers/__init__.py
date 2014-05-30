@@ -6,6 +6,7 @@ log = logging.getLogger()
 
 from vlib.analyzers import exploitability, freshness, popularity, reproducibility
 from vlib.analyzers.tools import call_for_each_bug
+from vlib.supertrace import SuperTrace
 
 def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir):
 
@@ -18,10 +19,14 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
 
     metadata = json.load(open("%s/vulture.json" % bugdir, "rt"))
 
+    st = SuperTrace()
+    st.start()
     pop = popularity.get(metadata, popularity_dict)
     fresh = freshness.get(metadata)
     exp = exploitability.get(bugdir)
     repro = reproducibility.get(metadata, bugdir)
+    st.stop()
+    st.dump("%s/supertrace.json" % out_dir)
     combined = {
             'popularity' : pop,
             'freshness' : fresh,

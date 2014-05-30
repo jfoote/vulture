@@ -12,15 +12,6 @@ class SuperTrace(object):
         self.inspect = inspect
         self.results = []
 
-    def get_size(self):
-        size = sys.getsizeof(self.results)
-        for li in self.results:
-            size += sys.getsizeof(li)
-            if getattr(li, '__iter__'):
-                for lii in li:
-                    size += sys.getsizeof(lii)
-        return size
-
     def start(self):
         sys.settrace(partial(self.trace))
 
@@ -37,44 +28,20 @@ class SuperTrace(object):
             else:
                 # otherwise strip project dir
                 filename = filename[len(self.rootdir):].strip("/\\")
-        if event != 'call':
-            # quick hack
-            return partial(self.trace)
-        if event == 'exception':
-            print "exception hit"
+
+        if event != 'call' and event != 'exception':
             return partial(self.trace)
 
         line_no = frame.f_lineno
 
-        # if not related to branching, don't trace
-        if event == 'line':
-            lines, start = self.inspect.getsourcelines(frame)
-            thisline = lines[line_no-start].strip("\r\n")
-            if "if" != thisline.strip()[:2]:
-                return partial(self.trace)
-        #if event == 'exception':
-        #    print self.inspect.getargvalues(frame)
-
         func_name = co.co_name
 
-        ''' deprecated
-        try:
-            filepath = self.inspect.getfile(co)
-        except TypeError as e:
-            # built-in
-            return partial(self.trace)
-
         arginfo = self.inspect.getargvalues(frame)
-        # globs = frame.f_globals 
-        # ^^ too much info for sure
-        if self.rootdir in filepath:
-            filepath = filepath[len(self.rootdir):].strip("/\\")
-        '''
-        arginfo = self.inspect.getargvalues(frame)
-        argdict = { 'keywords' : str(arginfo.keywords),
-                'varargs' : str(arginfo.varargs),
-                'args' : str(arginfo.args),
-                'locals' : str(arginfo.locals) }
+        argdict = { 'keywords' : arginfo.keywords,
+                'varargs' : arginfo.varargs,
+                'args' : arginfo.args,
+                'locals' : {k: repr(v) for k,v in arginfo.locals.items() }
+                }
         lineinfo = { 
                 #'filepath' : filepath,
                 'filename' : filename,
@@ -87,7 +54,7 @@ class SuperTrace(object):
         return partial(self.trace)
 
     def dump(self, path):
-        json.dump(self.results, file(path, "wt"))
+        json.dump(self.results, file(path, "wt"), indent=4)
    
 if __name__ == "__main__":
     import sys

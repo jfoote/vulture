@@ -13,12 +13,14 @@ def get(metadata, pop_dict):
     for line in metadata['description'].splitlines():
         line = line.strip()
         if "Package:" in line:
-            package = line.split(":")[1].split()[0].strip()
-            if package in packages:
-                # this way the most-likely-correct package is always first
-                packages.remove(package)
-            packages.insert(1, package)
-            break
+            try:
+                package = line.split(":")[1].split()[0].strip()
+                if package in packages:
+                    # this way the most-likely-correct package is always first
+                    packages.remove(package)
+                packages.insert(1, package)
+            finally:
+                break
 
     # get popularity for package
     sum_inst = 0

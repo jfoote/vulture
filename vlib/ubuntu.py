@@ -31,7 +31,7 @@ def cache_popularity(cachedir, force=False):
                 log.exception(e)
         if not item.get('name', False) or not item.get('inst', False):
             continue
-        if int(item['inst']) < 100: # got all of the popular ones
+        if int(item['inst']) < 10: # got all of the popular ones
             break
 
         out[item['name']] = item

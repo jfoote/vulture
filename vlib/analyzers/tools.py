@@ -8,6 +8,7 @@ def call_for_each_bug(bug_cache_dir, analyzer_func, limit=None):
     for root, dirs, files in os.walk(bug_cache_dir, topdown=True):
         log.debug("processing %s (#%d)" % (root, i))
         i += 1
+
         if limit and i > limit:
             log.debug("limit(%d) reached" % limit)
             break

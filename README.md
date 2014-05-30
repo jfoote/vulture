@@ -20,9 +20,11 @@ Analyzes open source bug trackers for interesting vulnerabilities
 - add recv/etc. checks to vulture
 - debug existing issues
 - fix bug: bugs in vulture are not associated with all of their projects, only one
-- generate and merge in "default handler" database (could use true/false, as well as ProcCmd from launcher; if ProcCmd/etc. is a big help could mine launches from apt repos)
+- generate and merge in "default handler" database (could use true/false, as well as ProcCmd from launcher) [started]
 - add better search fields, etc. to dynatable page (also make sure GA is working)
+    - just being able to stack searches/filters should be good enough
 - add ubuntu version to fields (filterable), if possible
+- add ability to mark bugs as "sweet" or "lame" via HTML5 state, if possible (don't think i can get get s3 to serve cookies anyway)
 
 # Design stuff
 

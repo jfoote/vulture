@@ -77,7 +77,7 @@ if __name__ == "__main__":
         from vlib.launchpad import cache_bugs
         from vlib.ubuntu import cache_popularity
         from datetime import date, timedelta
-        modified_since = (date.today()-timedelta(days=7)).strftime("%Y-%m-%d")
+        modified_since = (date.today()-timedelta(days=2)).strftime("%Y-%m-%d")
         cache_bugs(bug_cache_dir, modified_since, True)
         cache_popularity(os.path.join(options.cache_dir, "popularity"))
     elif args[0] == "report":

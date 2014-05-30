@@ -4,6 +4,9 @@
 import os, sys, json
 from functools import partial
 
+import logging
+log = logging.getLogger()
+
 class SuperTrace(object):
     def __init__(self, rootdir=None):
         if not rootdir:
@@ -53,8 +56,12 @@ class SuperTrace(object):
 
         return partial(self.trace)
 
-    def dump(self, path):
-        json.dump(self.results, file(path, "wt"), indent=4)
+    def dump(self, path, maxbytes=16777216): # 16MB
+        out = json.dumps(self.results, indent=4)
+        if sys.getsizeof(out) > maxbytes:
+            log.error("trace too big: %d > %d" % (sys.getsizeof(out), maxbytes))
+        else:
+            file(path, "wt").write(out)
    
 if __name__ == "__main__":
     import sys

@@ -56,9 +56,9 @@ class SuperTrace(object):
 
         return partial(self.trace)
 
-    def dump(self, path, maxbytes=16777216): # 16MB
+    def dump(self, path, maxbytes=None): #16777216*4): # 16MB*4
         out = json.dumps(self.results, indent=4)
-        if sys.getsizeof(out) > maxbytes:
+        if maxbytes and sys.getsizeof(out) > maxbytes:
             log.error("trace too big: %d > %d" % (sys.getsizeof(out), maxbytes))
         else:
             file(path, "wt").write(out)

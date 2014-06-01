@@ -2,6 +2,14 @@ import boto, os, gzip
 
 from vlib.analyzers.tools import call_for_each_bug
 
+def upload_html(filename, bucket):
+    key = bucket.new_key(filename)
+    key.set_metadata('Content-Type', 'text/html')
+    thisdir = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.join("%s/%s" % (thisdir, filename))
+    key.set_contents_from_filename(path)
+    key.set_canned_acl("public-read")
+
 def publish(analysis_dir, bug_dir, html_only=False):
     bucket = boto.connect_s3().get_bucket("vulture88")
 
@@ -12,13 +20,8 @@ def publish(analysis_dir, bug_dir, html_only=False):
     #   4. set ACL policy
 
     # publish HTML
-    key = bucket.new_key("index.html")
-    key.set_metadata('Content-Type', 'text/html')
-
-    thisdir = os.path.dirname(os.path.realpath(__file__))
-    path = os.path.join("%s/index.html" % thisdir)
-    key.set_contents_from_filename(path)
-    key.set_canned_acl("public-read")
+    upload_html("index.html")
+    upload_html("bugs.html")
 
     if html_only: # TODO; replace this option with something more flexible
         return

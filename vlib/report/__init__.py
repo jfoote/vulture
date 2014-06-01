@@ -1,7 +1,7 @@
 import boto, os, gzip
 from functools import partial
 
-from vlib.analyzers.tools import call_for_each_bug
+from vlib.analyzers.tools import call_for_each_analysis
 
 def upload_html(filename, bucket):
     key = bucket.new_key(filename)
@@ -11,7 +11,7 @@ def upload_html(filename, bucket):
     key.set_contents_from_filename(path)
     key.set_canned_acl("public-read")
 
-def publish(analysis_dir, bug_dir, html_only=False):
+def publish(analysis_dir, html_only=False):
     bucket = boto.connect_s3().get_bucket("vulture88")
 
     # note that order is important below:
@@ -32,12 +32,12 @@ def publish(analysis_dir, bug_dir, html_only=False):
     upload_json("%s/summary.json" % analysis_dir, "summary.json", bucket)
 
     # gzip/upload analysis for each bug
-    call_for_each_bug(bug_dir, partial(upload_analysis, bucket), 5)
+    call_for_each_analysis(analysis_dir, partial(upload_analysis, bucket), 5)
 
 def upload_analysis(bucket, bugdir):
     bug_id_str = bugdir.split("/")[-1]
 
-    upload_json("%s/vulture.json" % bugdir, "%s/vulture.json" % bug_id_str, bucket)
+    upload_json("%s/analysis.json" % bugdir, "%s/analysis.json" % bug_id_str, bucket)
 
 def upload_json(src, dst_key, bucket):
     json_path = os.path.join(src)

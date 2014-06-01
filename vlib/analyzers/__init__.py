@@ -42,7 +42,7 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
     # add this bug to summary
     # make a dynatable-ready json dict row
     bugrow = {}
-    bugrow['id'] = bug_id_str
+    bugrow['detail'] = '<a href="bug.html?%s">%s</a>' % (bug_id_str, bug_id_str)
     bugrow['title'] = "<a href='%s'>%s</a>" % (metadata['web_link'], metadata['title'])
 
     bugrow['installs'] = pop['sum_inst']

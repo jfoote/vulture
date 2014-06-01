@@ -71,6 +71,10 @@
 
 <script type='text/javascript'>
 
+bugid = window.location.href.slice(window.location.href.indexOf('?') + 1);
+console.log(bugid);
+parseInt(bugid); // poor man's input validation :|
+
 	//three types of objects
 	//	array
 	//  object
@@ -97,12 +101,11 @@
 		]}
 	};
 
-	$.getJSON( "https://s3.amazonaws.com/vulture88/1275687/vulture.json", function( data ){
-	//$.getJSON( bugid + "/vulture.json", function( data ){
+	$.getJSON( bugid + "/analysis.json", function( data ){
 		
         try {
   		//Visualize sample
-		visualize(JSON.stringify(data));
+		visualize(data);
 			}
 			catch (e)
 			{

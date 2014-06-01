@@ -1,4 +1,5 @@
 import boto, os, gzip
+from functools import partial
 
 from vlib.analyzers.tools import call_for_each_bug
 
@@ -20,8 +21,8 @@ def publish(analysis_dir, bug_dir, html_only=False):
     #   4. set ACL policy
 
     # publish HTML
-    upload_html("index.html")
-    upload_html("bugs.html")
+    upload_html("index.html", bucket)
+    upload_html("bug.html", bucket)
 
     if html_only: # TODO; replace this option with something more flexible
         return
@@ -34,11 +35,13 @@ def publish(analysis_dir, bug_dir, html_only=False):
     call_for_each_bug(bug_dir, partial(upload_analysis, bucket), 5)
 
 def upload_analysis(bucket, bugdir):
-    upload_json("%s/vulture.json", "%s/vulture.json", bucket)
+    bug_id_str = bugdir.split("/")[-1]
 
-def upload_json(src, dst_key, bucket)
+    upload_json("%s/vulture.json" % bugdir, "%s/vulture.json" % bug_id_str, bucket)
+
+def upload_json(src, dst_key, bucket):
     json_path = os.path.join(src)
-    gzip_path = "/tmp/%s" % src  # will be included in gzip header  :|
+    gzip_path = "/tmp/%s" % dst_key.replace("/","-") # will be included in gzip header  :|
     try:
         gzfile = gzip.open(gzip_path, 'wb')
         gzfile.write(open(json_path, 'rt').read())

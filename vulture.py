@@ -87,7 +87,7 @@ if __name__ == "__main__":
         if len(args) > 1 and args[1] == 'html':
             html_only = True
         from vlib.report import publish
-        publish(options.analysis_dir, html_only)
+        publish(options.analysis_dir, bug_cache_dir, html_only)
     else:
         parser.error("Unable to parse command. args=%s" % str(args))
 

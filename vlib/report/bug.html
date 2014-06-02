@@ -59,9 +59,12 @@
 			
 			<div style=";margin-top:20px;">
 				
-				<div class='divider' style='margin-top:40px;'></div>
-
 				<div id='top'></div>
+				<div class='divider' style='margin-top:40px;'></div>
+				<div id='bottom'></div>
+                <!-- <a id="start_trace" href="#" onclick="start_trace();">Start trace</a>
+                <a id="next_trace" href="#" onclick="next_trace()">Next_trace</a> -->
+
 			</div>
 
 
@@ -113,7 +116,35 @@ parseInt(bugid); // poor man's input validation :|
 			}
 		});
 
+    function start_trace() {
+        // TODO: attach to "start trace" link
+    	$.getJSON( bugid + "/trace.json", function( data ){
+                window.tracePos = 0;
+                window.traceData = data
+                next_trace();
+    		});
+    }
 
+    function next_trace() {
+            traceLine = window.traceData[window.tracePos]
+
+            window.ghWindow = window.open(
+                "https://github.com/jfoote/vulture/blob/master/" + String(traceLine.filename) + "#L" + String(traceLine.line_no),
+                "Github Code Window",
+                "resizable,scrollbars,status"
+                                                                                                                );
+            window.tracePos += 1;
+    		visualize_bottom(traceLine.arginfo);
+    }
+
+	function visualize_bottom(json) {
+		
+		$('#bottom').html('');
+
+		$('#bottom').json2html(convert('json',json,'open'),transforms.object);
+
+		regEvents();		
+	}
 	function visualize(json) {
 		
 		$('#top').html('');

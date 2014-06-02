@@ -19,15 +19,15 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
 
     metadata = json.load(open("%s/vulture.json" % bugdir, "rt"))
 
-    st = SuperTrace()
+    #st = SuperTrace()
+    #st.start()
     pop = popularity.get(metadata, popularity_dict)
     fresh = freshness.get(metadata)
-    st.start()
-    exp = exploitability.get(bugdir)
-    st.stop()
-    log.debug("supertrace LEN!!!=%d" % len(st.results))
+    #log.debug("supertrace LEN!!!=%d" % len(st.results))
     repro = reproducibility.get(metadata, bugdir)
-    st.dump("%s/supertrace.json" % out_dir)
+    #st.stop()
+    #st.dump("%s/trace.json" % out_dir)
+    exp = exploitability.get(bugdir) # HUGE trace
     combined = {
             'popularity' : pop,
             'freshness' : fresh,
@@ -42,7 +42,7 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
     # add this bug to summary
     # make a dynatable-ready json dict row
     bugrow = {}
-    bugrow['detail'] = '<a href="bug.html?%s">%s</a>' % (bug_id_str, bug_id_str)
+    bugrow['detail'] = '<a href="http://s3.amazonaws.com/vulture88/bug.html?%s">%s</a>' % (bug_id_str, bug_id_str) #TODO fix this to relative path (via https) once i upload js/css to S3
     bugrow['title'] = "<a href='%s'>%s</a>" % (metadata['web_link'], metadata['title'])
 
     bugrow['installs'] = pop['sum_inst']

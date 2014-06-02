@@ -32,12 +32,14 @@ def publish(analysis_dir, html_only=False):
     upload_json("%s/summary.json" % analysis_dir, "summary.json", bucket)
 
     # gzip/upload analysis for each bug
-    call_for_each_analysis(analysis_dir, partial(upload_analysis, bucket), 5)
+    call_for_each_analysis(analysis_dir, partial(upload_analysis, bucket))#, 5)
 
 def upload_analysis(bucket, bugdir):
     bug_id_str = bugdir.split("/")[-1]
 
     upload_json("%s/analysis.json" % bugdir, "%s/analysis.json" % bug_id_str, bucket)
+    #print "json for %s" % bugdir
+    #upload_json("%s/trace.json" % bugdir, "%s/trace.json" % bug_id_str, bucket)
 
 def upload_json(src, dst_key, bucket):
     json_path = os.path.join(src)

@@ -197,6 +197,7 @@ def cache_bugs(cachedir, modified_since=None, force=False):
                 os.makedirs(dpath)
             log.debug("caching bug: %s" % dpath)
             try:
+                pass
                 cache_bug(bug, dpath, force)
             except Exception as e:
                 log.error("ERROR while caching bug %s to %s" % (str(bug), dpath))

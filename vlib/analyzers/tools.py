@@ -20,6 +20,7 @@ def call_for_each_item(bug_cache_dir, analyzer_func, limit, match_filename, bugl
 
         bug_id_str = root.split("/")[-1]
         if buglist and bug_id_str not in buglist:
+            # TODO: rather than iterating and skipping when a buglist is supplied, this function should just access only the bugs in the bug list directly (without using os.walk over all bugs)
             continue
 
         if match_filename not in files:

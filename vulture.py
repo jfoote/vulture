@@ -75,13 +75,15 @@ if __name__ == "__main__":
         from vlib.ubuntu import cache_desktop_entries
         cache_desktop_entries(os.path.join(options.cache_dir, "desktop-entries"), True)
     elif args[0] == "update-cache":
+        days = int(args[1])
         # cache info for recently updated bugs, popularity
         from vlib.launchpad import cache_bugs
         from vlib.ubuntu import cache_popularity
+        from vlib.analyzers import analyze
         from datetime import date, timedelta
 
         # cache info for modified bugs
-        modified_since = (date.today()-timedelta(days=3)).strftime("%Y-%m-%d")
+        modified_since = (date.today()-timedelta(days=days)).strftime("%Y-%m-%d")
         buglist = cache_bugs(bug_cache_dir, modified_since, True)
         cache_popularity(os.path.join(options.cache_dir, "popularity"), True)
 
@@ -89,19 +91,18 @@ if __name__ == "__main__":
         analyzers = filter(None, options.analyzers.split(","))
         analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir, None, analyzers, buglist)
 
-        if args[1] == "publish":
+        if len(args) > 2 and args[2] == "publish":
             from vlib.report import publish
-            publish(options.analysis_dir, html_only, buglist)
-            # TODO test this :)
+            publish(options.analysis_dir, [], buglist)
 
     elif args[0] == "report":
         raise NotImplementedError("TODO this should generate a report (static HTML)")
     elif args[0] == "publish":
-        html_only = False
-        if len(args) > 1 and args[1] == 'html':
-            html_only = True
+        plist = []
+        if len(args) > 1: 
+            plist = args[1].split(",")
         from vlib.report import publish
-        publish(options.analysis_dir, html_only)
+        publish(options.analysis_dir, plist)
     else:
         parser.error("Unable to parse command. args=%s" % str(args))
 

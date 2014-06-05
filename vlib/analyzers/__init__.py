@@ -8,7 +8,7 @@ from vlib.analyzers import exploitability, freshness, popularity, reproducibilit
 from vlib.analyzers.tools import call_for_each_bug
 from vlib.supertrace import SuperTrace
 
-def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir):
+def store_analysis(summary_dict, analyzers, bug_cache_dir, analysis_dir, popularity_dict, bugdir):
 
     # mirror bug_cache_dir structure in analysis_dir
     dir_tail = bugdir[len(bug_cache_dir):]
@@ -21,59 +21,65 @@ def store_analysis(summary, bug_cache_dir, analysis_dir, popularity_dict, bugdir
 
     #st = SuperTrace()
     #st.start()
-    pop = popularity.get(metadata, popularity_dict)
-    fresh = freshness.get(metadata)
-    #log.debug("supertrace LEN!!!=%d" % len(st.results))
-    repro = reproducibility.get(metadata, bugdir)
     #st.stop()
+    #log.debug("supertrace LEN!!!=%d" % len(st.results))
     #st.dump("%s/trace.json" % out_dir)
-    exp = exploitability.get(bugdir) # HUGE trace
-    combined = {
-            'popularity' : pop,
-            'freshness' : fresh,
-            'exploitability' : exp,
-            'reproducibility' : repro
-            }
 
-    # dump analysis for this bug 
     bug_id_str = bugdir.split("/")[-1]
-    json.dump(combined, open("%s/analysis.json" % out_dir, "wt"), indent=4)
-
-    # add this bug to summary
-    # make a dynatable-ready json dict row
+    results = {}
     bugrow = {}
     bugrow['detail'] = '<a href="http://s3.amazonaws.com/vulture88/bug.html?%s">%s</a>' % (bug_id_str, bug_id_str) #TODO fix this to relative path (via https) once i upload js/css to S3
     bugrow['title'] = "<a href='%s'>%s</a>" % (metadata['web_link'], metadata['title'])
 
-    bugrow['installs'] = pop['sum_inst']
+    if 'popularity' in analyzers:
+        pop = popularity.get(metadata, popularity_dict)
+        results['popularity'] = pop
+        bugrow['installs'] = pop['sum_inst']
+    if 'freshness' in analyzers:
+        fresh = freshness.get(metadata)
+        results['freshness']  = fresh
+        bugrow['date_modified'] = fresh['date_last_updated']
+        bugrow['date_created'] = fresh['date_created']
+        bugrow['status'] = "<br>".join(["%s: %s" % (pn, md['status']) for pn, md in fresh['project_metadata'].items()])
+        bugrow['status_score'] = fresh['best_status_score']
 
-    bugrow['date_modified'] = fresh['date_last_updated']
-    bugrow['date_created'] = fresh['date_created']
-    bugrow['status'] = "<br>".join(["%s: %s" % (pn, md['status']) for pn, md in fresh['project_metadata'].items()])
-    bugrow['status_score'] = fresh['best_status_score']
+    if 'exploitability' in analyzers:
+        exp = exploitability.get(bugdir)
+        results['exploitability'] = exp 
+        bugrow['exp_rank'] = exp.ranking[0] if exp else 100
+        bugrow['exp_tags'] = ',<br>'.join([t.split()[0] for t in exp['tags']]) if exp else ""
 
-    bugrow['exp_rank'] = exp.ranking[0] if exp else 100
-    bugrow['exp_tags'] = ',<br>'.join([t.split()[0] for t in exp['tags']]) if exp else ""
+    if 'reproducibility' in analyzers:
+        repro = reproducibility.get(metadata, bugdir)
+        results['reproducibility']  = repro
+        bugrow['file_arg'] = repro['cmdline_uri'] if bool(repro['cmdline_uri']) else "None"
+        bugrow['testcases'] = "<br>,".join(repro['files'])
+        bugrow['repro_score'] = int(bool(repro['files'])) + int(bool(repro['cmdline_uri']))
+ 
+    json.dump(results, open("%s/analysis.json" % out_dir, "wt"), indent=4)
+    summary_dict[bug_id_str] = bugrow
 
-    bugrow['file_arg'] = repro['cmdline_uri'] if bool(repro['cmdline_uri']) else "None"
-    bugrow['testcases'] = "<br>,".join(repro['files'])
-    bugrow['repro_score'] = int(bool(repro['files'])) + int(bool(repro['cmdline_uri']))
-    
-    summary.append(bugrow)
-
-def analyze(bug_cache_dir, analysis_dir, popularity_cache_dir, limit=None):
+def analyze(bug_cache_dir, analysis_dir, popularity_cache_dir, limit=None, analyzers=[], buglist=[]):
     '''
     This function should cache a JSON object corresponding to the
     data that will be used on index.html: bug_id, bug_title, <metric ranks>
+    If analyzers is set, will run only the specified analyzers 
+    If buglist is set, will analyze only those bugs and merge them into existing
+    summary (if it exists)
     '''
-    # gather/store analysis for each bug
     popularity_dict = json.load(open("%s/popularity.json" % popularity_cache_dir, "rt"))
-    summary = []
+
+    if buglist:
+        summary_dict = json.load(open("%s/summary_dict.json" % analysis_dir, "rt"))
+    else:
+        summary_dict = {}
+
+    # gather/store analysis for each bug
     call_for_each_bug(bug_cache_dir, 
-            partial(store_analysis, summary, bug_cache_dir, analysis_dir, popularity_dict), limit)
+            partial(store_analysis, summary_dict, analyzers, bug_cache_dir, analysis_dir, popularity_dict), limit, buglist)
 
-    # store summary for all bugs 
-    json.dump(summary, open("%s/summary.json" % analysis_dir, "wt"), indent=4)
+    # store summary for all bugs: first store dict, then stores as rows for use by dynatable
+    json.dump(summary_dict, open("%s/summary_dict.json" % analysis_dir, "wt"), indent=4)
+    json.dump(summary_dict.values(), open("%s/summary.json" % analysis_dir, "wt"), indent=4)
 
-    return summary
-
+    return summary_dict

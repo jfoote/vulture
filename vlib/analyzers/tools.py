@@ -1,13 +1,13 @@
 import os, logging
 
 log = logging.getLogger()
-def call_for_each_bug(bug_cache_dir, analyzer_func, limit=None):
-    return call_for_each_item(bug_cache_dir, analyzer_func, limit, "vulture.json")
+def call_for_each_bug(bug_cache_dir, analyzer_func, limit=None, buglist=[]):
+    return call_for_each_item(bug_cache_dir, analyzer_func, limit, "vulture.json", buglist)
 
-def call_for_each_analysis(bug_cache_dir, analyzer_func, limit=None):
-    return call_for_each_item(bug_cache_dir, analyzer_func, limit, "analysis.json")
+def call_for_each_analysis(bug_cache_dir, analyzer_func, limit=None, buglist=[]):
+    return call_for_each_item(bug_cache_dir, analyzer_func, limit, "analysis.json", buglist)
 
-def call_for_each_item(bug_cache_dir, analyzer_func, limit, match_filename):
+def call_for_each_item(bug_cache_dir, analyzer_func, limit, match_filename, buglist):
     # do analysis for each bug in bug_cache_dir
     i = 0
     for root, dirs, files in os.walk(bug_cache_dir, topdown=True):
@@ -17,6 +17,10 @@ def call_for_each_item(bug_cache_dir, analyzer_func, limit, match_filename):
         if limit and i > limit:
             log.debug("limit(%d) reached" % limit)
             break
+
+        bug_id_str = root.split("/")[-1]
+        if buglist and bug_id_str not in buglist:
+            continue
 
         if match_filename not in files:
             continue

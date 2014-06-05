@@ -19,10 +19,10 @@ if __name__ == "__main__":
     parser = OptionParser(usage=usage, description=desc)
     parser.add_option("-l", "--logfile", dest="logfile")
     parser.add_option("-e", "--loglevel", dest="loglevel", default="DEBUG")
-    #parser.add_option("-b", "--bucket", dest="bucket", default="evde", help="S3 bucket to use for read/write")
+    parser.add_option("-b", "--buglist", dest="buglist", default="", help="List of bug IDs to process")
+    parser.add_option("-z", "--analyzers", dest="analyzers", default="popularity,reproducibility,exploitability,freshness", help="List of top-level analyzers to apply to each bug, only makes sense if command is analyzing bugs, OFC")
     parser.add_option("-c", "--cache-directory", dest="cache_dir", default="data", help="Local directory to use as cache for remote bug information (bug info is read/written here)")
     parser.add_option("-a", "--analysis-cache-directory", dest="analysis_dir", default="data/analysis", help="Local directory to use as cache for analysis results (anallysis info is read/written here)")
-    
     
     (options, args) = parser.parse_args()
      
@@ -51,9 +51,11 @@ if __name__ == "__main__":
         limit = None
         if len(args) > 1:
             limit = int(args[1])
+        buglist = filter(None, options.buglist.split(","))
+        analyzers = filter(None, options.analyzers.split(","))
         from vlib.analyzers import analyze
         log.info("Analyzing bug cache in directory: %s" % bug_cache_dir)
-        scores = analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir, limit)
+        scores = analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir, limit, analyzers, buglist)
     elif args[0] == "build-cache":
         # cache everything
         from vlib.launchpad import cache_bugs
@@ -77,9 +79,21 @@ if __name__ == "__main__":
         from vlib.launchpad import cache_bugs
         from vlib.ubuntu import cache_popularity
         from datetime import date, timedelta
-        modified_since = (date.today()-timedelta(days=2)).strftime("%Y-%m-%d")
-        cache_bugs(bug_cache_dir, modified_since, True)
-        cache_popularity(os.path.join(options.cache_dir, "popularity"))
+
+        # cache info for modified bugs
+        modified_since = (date.today()-timedelta(days=3)).strftime("%Y-%m-%d")
+        buglist = cache_bugs(bug_cache_dir, modified_since, True)
+        cache_popularity(os.path.join(options.cache_dir, "popularity"), True)
+
+        # analyze modified bugs
+        analyzers = filter(None, options.analyzers.split(","))
+        analyze(bug_cache_dir, options.analysis_dir, popularity_cache_dir, None, analyzers, buglist)
+
+        if args[1] == "publish":
+            from vlib.report import publish
+            publish(options.analysis_dir, html_only, buglist)
+            # TODO test this :)
+
     elif args[0] == "report":
         raise NotImplementedError("TODO this should generate a report (static HTML)")
     elif args[0] == "publish":

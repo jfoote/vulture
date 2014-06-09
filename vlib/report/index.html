@@ -24,8 +24,6 @@
     
     <link rel="stylesheet" media="all" href="https://s3.amazonaws.com/dynatable-docs-assets/css/jquery.dynatable.css" />
     
-    
-    <!--<script type='text/javascript' src='https://s3.amazonaws.com/dynatable-docs-assets/js/jquery.dynatable.js'></script> --> 
     <script type='text/javascript' src='https://s3.amazonaws.com/dynatable-docs-assets/js/jquery.dynatable.js'></script>
     
     <script type='text/javascript' src='https://s3.amazonaws.com/dynatable-docs-assets/js/highcharts.js'></script>
@@ -41,10 +39,13 @@
 
     </script>
 
+<a href='#' id="show-search"><p font size="small">Show detailed search</p></a>
+<a href='#' id="hide-search"><p font size="small">Hide detailed search</p></a>
+<form name="detailed-search" id="detailed-search">
+This doesn't work properly right now, move along...
 <table border=0><tr>
 <td>Search: <input type="text" id="fsearch" name="fsearch"></td>
 <td>Field: <select id="fsearch-field" name="fsearch-field">
-        <option>All</option>
         <option>title</option>
         <option>installs</option>
         <option>exp_tags</option>
@@ -55,6 +56,7 @@
         <option>detail</option>
 </select></td>
 </tr></table>
+</form>
 
 <table id="my-final-table" class="table table-bordered">
   <thead>
@@ -80,37 +82,40 @@
 var dynatable = null;
 // Load bug data into dynatable
 $.getJSON( "summary.json", function( data ) {
-        dynatable = $('#my-final-table').dynatable({
-            dataset: {
-                records: data
-            }
+    dynatable = $('#my-final-table')
+        .bind('dynatable:init', function(e, dynatable) {
+            dynatable.queries.functions['fsearch'] = function(record, queryValue) {
+                //return record.getAttribute('somehowparsecombobox') ~= queryValue (like python 'in')
+                ///return parseFloat(record.price.replace(/,/,'')) <= parseFloat(queryValue);
+                //console.log("custom query func ran", record, queryValue)
+                return true;
+            };
+          })
+        .dynatable({
+                dataset: {
+                    records: data
+                }, 
+                inputs : {
+                    queries: $("#fsearch")
+                }
         });
         console.log("before");
         console.log(dynatable);
 });
 
 $(function() { // runs when DOM is ready
-
-    // Add per-field search functionality
-    $("#fsearch").keyup(function (e) {
-        if (e.keyCode == 13) {
-            // NOTE: add column 'search' to search all fields; or call runSearch(query), though note there can be only one "search" at a time
-            console.log(dynatable);
-            console.log($(this).val());
-            console.log($("#fsearch-field").val());
-            searchText = $(this).val();
-            column = $("#fsearch-field").val();
-            dt_data = dynatable.data('dynatable');
-            dt_data.queries.remove(column);
-            dt_data.queries.add(column, searchText);
-            debugger;
-            console.log("before process:", dt_data.settings.dataset.queries);
-            dt_data.process(false);
-            console.log("after process:", dt_data.settings.dataset.queries);
-            // NTS: line 1149 of dynatable is where rigid search occurs, but it would be better to define a custom query function i think...
-            // NTS: line 1590 is where only the 'search' query key/value gets written to the URI
-        }
+    $('#hide-search').hide(); //Initially form wil be hidden.
+    $('#detailed-search').hide(); //Initially form wil be hidden.
+    $('#show-search').click(function() {
+        $('#detailed-search').show();
+        $('#hide-search').show();
+        $('#show-search').hide();
     });
-});
+    $('#hide-search').click(function() {
+        $('#detailed-search').hide();
+        $('#hide-search').hide();
+        $('#show-search').show();
+    });
 
+});
 </script>

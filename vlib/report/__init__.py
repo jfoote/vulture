@@ -24,6 +24,8 @@ def publish(analysis_dir, pub_list=[], buglist=[]):
     if (not pub_list) or ('html' in pub_list):
         upload_html("index.html", bucket)
         upload_html("bug.html", bucket)
+        upload_html("jquery.dynatable.js")
+        upload_html("jquery.dynatable.css")
 
     # publish analysis data
     # gzip/upload summary json file

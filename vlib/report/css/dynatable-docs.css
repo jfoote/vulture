@@ -1,0 +1,426 @@
+a {
+  color: #00a290;
+}
+ol {
+  list-style: decimal;
+}
+ul {
+  list-style: disc;
+}
+#topbar {
+  background: #2d2f31;
+  height: inherit;
+  min-height: 50px;
+  overflow: auto;
+	width: 100%;
+}
+#topbar-contained {
+  width: 99%;
+  margin-left: 1%;
+}
+#right-nav {
+  float: right;
+  margin: 0;
+}
+#right-nav li {
+  display: inline-block;
+  margin-left: -5px;
+}
+#right-nav a {
+  display: block;
+  padding: 15px 20px;
+  border-right: solid 1px #38393a;
+  margin: 0;
+  line-height: 20px;
+  color: #fff;
+}
+#right-nav a:hover {
+  text-decoration: none;
+  background: #38393a;
+}
+#right-nav li:first-child a {
+  border-left: solid 1px #38393a;
+}
+#supported-by {
+  float: left;
+  line-height: 47px;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+#supported-by a {
+  color: #fff;
+}
+#splashbar {
+  overflow: hidden;
+  width: 100%;
+  background: #2c393e;
+  color: #fff;
+  padding: 25px 0;
+  position: relative;
+}
+#plugin-graphic {
+  margin-top: 30px;
+  width: 500px;
+}
+.splash-left,
+.splash-right {
+  position: relative;
+  z-index: 5;
+}
+.splash-left {
+  float: left;
+  width: 40%;
+  margin-left: 2%;
+  text-align: right;
+}
+.splash-right {
+  float: left;
+  width: 50%;
+  max-width: 575px;
+  margin-left: 3%;
+  margin-right: 5%;
+}
+
+#tagbar .contained {
+  max-width: calc(5% + 960px);
+}
+#last-commit {
+  float: right;
+  line-height: 70px;
+  color: #2C393E;
+  font-size: 16px;
+}
+#last-commit a {
+  color: #fff;
+  font-size: 16px;
+}
+#last-commit .latest-date {
+}
+#last-commit .latest-sha {
+  font-weight: bold;
+}
+#share-container {
+  margin-top: 5px;
+  margin-left: calc(5% + 20px);
+  line-height: 70px;
+}
+#shareme .box {
+  margin: 0;
+}
+#shareme .count {
+  font-size: 40px;
+  margin-top: -3px;
+  line-height: inherit;
+  border-right: 1px solid #6CC4BB;
+}
+#shareme .buttons {
+  top: 4px;
+  height: 65px;
+}
+#shareme .share {
+  width: auto;
+}
+#shareme .box a {
+  color: #fff;
+}
+#shareme .share span {
+}
+#shareme .share img {
+  top: 0;
+}
+.github-button {
+}
+#title,
+#tagline,
+#splashbar h2,
+#description {
+  font-family: 'Open Sans', sans-serif;
+  margin-bottom: 20px;
+}
+#title {
+  font-family: 'Nunito', sans-serif;
+  margin-top: 30px;
+  font-size: 80px;
+  color: #006a72;
+  line-height: 1em;
+  text-transform: uppercase;
+}
+#title span {
+  color: #00a290;
+}
+#tagline {
+  font-size: 30px;
+  margin-top: 35px;
+  line-height: 1em;
+}
+#description {
+  font-size: 18px;
+  color: #6cc4bb;
+}
+#download {
+  margin-top: 50px;
+}
+#download .btn {
+  display: block;
+  margin: 0 auto 25px;
+}
+#download-button,
+.btn.primary {
+  background: rgb(104,195,186); /* Old browsers */
+  /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+  background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzY4YzNiYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGEyOTAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+  background: -moz-linear-gradient(top,  rgba(104,195,186,1) 0%, rgba(0,162,144,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(104,195,186,1)), color-stop(100%,rgba(0,162,144,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(104,195,186,1) 0%,rgba(0,162,144,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(104,195,186,1) 0%,rgba(0,162,144,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(104,195,186,1) 0%,rgba(0,162,144,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(104,195,186,1) 0%,rgba(0,162,144,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#68c3ba', endColorstr='#00a290',GradientType=0 ); /* IE6-8 */
+}
+.mountain {
+  background: #3B494E;
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  -moz-transform:rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -o-transform:rotate(45deg);
+  filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5);
+  -ms-transform:rotate(45deg);
+  bottom: 0;
+  z-index: 1;
+}
+#tagbar {
+  background: #00a290;
+  position: relative;
+  z-index: 5;
+  border-top-color: #6cc4bb;
+  overflow: hidden;
+  width: 100%;
+  padding-bottom: 0;
+  min-height: 85px;
+  min-width: inherit;
+}
+#download-group,
+#github-group {
+  float: left;
+  text-align: center;
+  min-width: 265px;
+  margin-bottom: 25px;
+  margin-right: 15px;
+}
+#download-count {
+  font-size: 30px;
+  color: #fff;
+}
+#download-count span {
+  font-size: 0.7em;
+  color: #88F7EB;
+}
+
+#content {
+  min-width: inherit;
+}
+#post {
+  max-width: 960px;
+}
+
+#post h2 {
+  margin-top: 35px;
+  padding-top: 20px;
+  border-top: solid 1px #ddd;
+}
+
+#post h3 {
+  margin-top: 25px;
+}
+
+#post .row-fluid {
+  margin: 20px 0;
+}
+
+#post pre {
+  margin: 20px 0;
+}
+
+#post .no-margin-pre pre {
+  margin: 0;
+}
+
+#toc ul {
+  margin: 10px 0;
+}
+#toc li {
+  padding: 1px 5px;
+}
+#toc .toc-active {
+  background: #006a72;
+  border-color: #006a72;
+}
+
+th {
+  background: #006a72;
+}
+
+.side-by-side {
+  width: 49%;
+  float: left;
+}
+.side-by-side.left { 
+  margin-right: 2%;
+}
+
+#json-records.error {
+  -moz-box-shadow: 0 0 2px rgba(255,0,0,1);
+  -webkit-box-shadow: 0 0 6px rgba(255,0,0,1);
+  box-shadow: 0 0 6px rgba(255,0,0,1);
+  background: rgb(85, 8, 8);
+}
+#ul-example {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  margin-left: 0;
+  margin-top: 0;
+  top: -10px;
+}
+
+#ul-example .first {
+  margin-left: 0;
+}
+
+#ul-example li {
+  margin-top: 18px;
+}
+#ul-example .thumbnail-image {
+  height: 180px;
+}
+#ul-example h3 {
+  line-height: 1.2em;
+  height: 3em;
+}
+
+@media (max-width: 1680px) {
+  #post {
+    width: 70%;
+  }
+}
+
+@media (max-width: 1380px) {
+  #post {
+    width: 80%;
+  }
+
+  #last-commit {
+    float: none;
+    line-height: 1.25em;
+    margin-left: calc(5% + 20px);
+    padding: 15px 0 20px;
+  }
+  #share-container {
+    float: none;
+    line-height: 70px;
+  }
+  #shareme .box {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 1200px) {
+  #post {
+    width: 90%;
+  }
+}
+@media only screen and (max-width: 1080px) {
+  .splash-left,
+  .splash-right {
+    float: none;
+    width: 98%;
+    margin: 0 1%;
+    text-align: center;
+  }
+  .splash-right {
+    max-width: none;
+  }
+  #plugin-graphic {
+    margin-top: 20px;
+    width: 250px;
+  }
+  #download-group, #github-group {
+    float: none;
+    display: inline-block;
+  }
+  #share-container {
+    text-align: center;
+  }
+}
+@media only screen and (max-width: 850px) {
+  #share-container {
+    width: 90%;
+  }
+}
+@media (max-width: 650px) {
+  #supported-by,
+  #right-nav {
+    display: block;
+    float: none;
+    text-align: center;
+  }
+  .row-fluid .how-it-works-col {
+    width: 100%;
+    margin: 0;
+    float: none;
+  }
+}
+@media (max-width: 480px) {
+  #title {
+    font-size: 50px;
+  }
+  /* Force table to not be like tables anymore */
+  .responsive-table table, 
+  .responsive-table thead, 
+  .responsive-table tbody, 
+  .responsive-table th, 
+  .responsive-table td, 
+  .responsive-table tr { 
+    display: block; 
+  }
+
+  /* Hide table headers (but not display: none;, for accessibility) */
+  .responsive-table thead tr { 
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  .responsive-table tr { border: 1px solid #ccc; }
+
+  .responsive-table td { 
+    /* Behave  like a "row" */
+    border: none;
+    border-bottom: 1px solid #eee; 
+    position: relative;
+    padding-left: 40%; 
+    white-space: normal;
+    text-align:left;
+  }
+
+  .responsive-table td:before { 
+    /* Now like a table header */
+    position: absolute;
+    /* Top/left values mimic padding */
+    top: 6px;
+    left: 6px;
+    width: 35%; 
+    padding-right: 10px; 
+    white-space: nowrap;
+    text-align:left;
+    font-weight: bold;
+  }
+
+  /*
+  Label the data
+   */
+  .responsive-table td:before { content: attr(data-title); }
+}

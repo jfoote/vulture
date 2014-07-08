@@ -279,8 +279,6 @@
         this.state.push(data);
       }
     }
-
-    this.$element.addClass('dynatable-loaded');
     this.$element.trigger('dynatable:afterProcess', data);
   };
 

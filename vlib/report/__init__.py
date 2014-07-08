@@ -24,8 +24,18 @@ def publish(analysis_dir, pub_list=[], buglist=[]):
     if (not pub_list) or ('html' in pub_list):
         upload_html("index.html", bucket)
         upload_html("bug.html", bucket)
-        upload_html("jquery.dynatable.js")
-        upload_html("jquery.dynatable.css")
+        upload_html("js/jquery-1.9.1.min.js", bucket)
+        upload_html("js/jquery.dynatable.js", bucket)
+        upload_html("js/jquery.scrollTo.js", bucket)
+        upload_html("js/jquery.sharrre-1.2.0.min.js", bucket)
+        upload_html("js/jquery.toc.min.js", bucket)
+        upload_html("css/bootstrap-2.3.2.min.css", bucket)
+        upload_html("css/dynatable-docs.css", bucket)
+        upload_html("css/jquery.dynatable.css", bucket)
+        upload_html("css/project.css", bucket)
+        upload_html("css/pygments.css", bucket)
+        upload_html("css/reset.css", bucket)
+        upload_html("css/share.css", bucket)
 
     # publish analysis data
     # gzip/upload summary json file

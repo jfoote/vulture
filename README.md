@@ -4,7 +4,7 @@ Analyzes open source bug trackers for interesting vulnerabilites. See [the lates
 
 **WARNING: This code is a mess and has not been factored for maintainability or consumption by others in general.**
 
-*So unpolished you need to read the source code to figure out how to use it*
+*Very unpolished: you'll almost definitely need to read the source code to figure out how to use this*
 
 This implementation assumes it is running in an EC2 instance with a role that has access to the 'vulture88' bucket. I'm sorry. If you're interested in how this came to be, how it works, or if you want to collaborate on pushing it forward [drop me a line](jmfoote@loyola.edu).
 

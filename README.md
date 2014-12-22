@@ -14,7 +14,7 @@ Vulture runs on an EC2 node. The script downloads bug info from public trackers 
 
 ## The story (adapted from an email)
 
-A while back I had a suspicion that there was untapped 0day circulating as public bugs in open source trackers. Despite many other obligations curiosity started to get the better of me so I hacked together a tool to probe ubuntu’s bug tracker for 0day as an after-hours project. I got partway there before I stepped back and adjusted to focus my after-hours research on more tangible defensive problems. 
+A while back I had a suspicion that there was untapped 0day circulating as public bugs in open source trackers. Curiosity started to get the better of me so I hacked together a tool to probe ubuntu’s bug tracker for 0day as an after-hours project. Partway through the project I experienced a number of (good) influences on my research direction, which resulted in my work on this project slowing down. So, I decided to publish the project to foster use of any of its concepts or code.
 
 ## Status stuff 
 

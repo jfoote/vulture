@@ -6,7 +6,7 @@ Analyzes open source bug trackers for interesting vulnerabilites. See [the lates
 
 *So unpolished you need to read the source code to figure out how to use it*
 
-This implementation assumes it is running in an EC2 instance with a role that has access to the 'vulture88' bucket. I'm sorry. If you're interested in how this came to be, how it works, or if you want to collaborate on some research [drop me a line](jmfoote@loyola.edu).
+This implementation assumes it is running in an EC2 instance with a role that has access to the 'vulture88' bucket. I'm sorry. If you're interested in how this came to be, how it works, or if you want to collaborate on pushing it forward [drop me a line](jmfoote@loyola.edu).
 
 ## How it works
 
@@ -16,7 +16,9 @@ Vulture runs on an EC2 node. The script downloads bug info from public trackers 
 
 A while back I had a suspicion that there was untapped 0day circulating as public bugs in open source trackers. Despite many other obligations curiosity started to get the better of me so I hacked together a tool to probe ubuntu’s bug tracker for 0day as an after-hours project. I got partway there before I stepped back and adjusted to focus my after-hours research on more tangible defensive problems. 
 
-## Status stuff (summer 2014)
+## Status stuff 
+
+unpolished, circa sometime during summer 2014
 
 ### Some things that are done
 - 'analyze' does this:

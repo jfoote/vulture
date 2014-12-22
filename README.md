@@ -1,11 +1,18 @@
-vulture
-=======
+# vulture
 
-Analyzes open source bug trackers for interesting vulnerabilities
+Analyzes open source bug trackers for interesting vulnerabilites. 
 
-# Status stuff
+*So unpolished you need to read the source code to know how to use it*
 
-## Some things that are done
+This implementation assumes it is running in an EC2 instance with a role that has access to the 'vulture88' bucket. I'm sorry. If you're interested in how this came to be, how it works, or if you want to collaborate on some research [drop me a line](jmfoote@loyola.edu).
+
+## How it works
+
+Vulture runs on an EC2 node. The script downloads bug info from public trackers for the time period since it was last run. The script then runs some analysis (see below) over the dataset and produces a JSON file. The JSON file and an html file that points to it are uploaded to an S3-hosted static site for consumption.
+
+## Status stuff (summer 2014)
+
+### Some things that are done
 - 'analyze' does this:
     - generates a json file for each bug that shows more detailed analysis 
         - should correspond to a per-bug analysis page
@@ -14,9 +21,9 @@ Analyzes open source bug trackers for interesting vulnerabilities
 - 'publish' does this:
     - copies the summary + report HTML to s3
 
-## TODOs
+### TODOs
 - fix "ubuntu" project parsing
-    - ubunut not found in popcon -- bad sign
+    - ubuntu not found in popcon -- bad sign
 - add recv/etc. checks to vulture
 - debug existing issues
 - fix bug: bugs in vulture are not associated with all of their projects, only one
@@ -24,15 +31,14 @@ Analyzes open source bug trackers for interesting vulnerabilities
 - add better search fields, etc. to dynatable page (also make sure GA is working)
     - just being able to stack searches/filters should be good enough
 - add ubuntu version to fields (filterable), if possible
-- add ability to mark bugs as "sweet" or "lame" via HTML5 state, if possible (don't think i can get get s3 to serve cookies anyway)
 
-# Design stuff
+## Design stuff
 
-## Guidelines
+### Guidelines
 - the idea is to show the values for each bug on the front page so the user can tune up the bugs they want
 - may want to give more bg on the bug on the main page.. project titles, etc., but don't go overboard (it needs to fit on the width of a screen) (could make column names short, maybe)
 
-## will sort by "interestingness," broken into these categories:
+### will sort by "interestingness," broken into these categories:
 
 - exploitability
     - remotely exploitable
@@ -64,25 +70,25 @@ Analyzes open source bug trackers for interesting vulnerabilities
     - ubuntu popularity contest (popcon) stats for project. see [here](http://popcon.ubuntu.com/)
     - installed by default in ubuntu (see my blog post)
 
-## other plans
+### other plans
+
 - don't worry about users/editing -- leave that to launchpad, bugzilla, etc. (why re-invent the wheel?)
 - should be able to be run nightly to generate report/publish to website
-
-## big wants
 - Red Hat bugzilla integration; [looks like ABRT's backtrace file supplies enough for exploitability analysis](https://bugzilla.redhat.com/show_bug.cgi?id=1048457)
 
+### related research
 
-## trade study
 - found a paper from dawn song, et. al. that only ended up being a tech report, talking about doing ML on firefox to find security patches: [how open should open source be](http://www.eecs.berkeley.edu/Pubs/TechRpts/2011/EECS-2011-98.html)
 - how abrt does exploitability analysis [here](https://github.com/abrt/abrt/blob/1fe8dc16e855c7802ed57cd5b47a11235dc53b07/src/plugins/abrt-gdb-exploitable)
     - note the link above may not be 'master' (it is now)
     - it does a pretty good job; is opcode aware; based loosely on my plugin : )
-        - i can edge it out (i can resolve addrs, etc.) but i'm not sure how important that will be; other 'interestness metrics' may prevail over automated exploitability analysis
+        - vulture could edge it out (it can resolve addrs, etc.) but i'm not sure how important that will be; other 'interestness metrics' may prevail over automated exploitability analysis
 - how apport does exploitability analysis can be found via 'apt-get source apport' and then look for parse\_segv.py
     - confuses src/dst at times (is not opcode aware)
-    - generally not too great
+    - in some cases not too great
 
-## making analyze self-explanatory, automatically
+### making analyze self-explanatory, automatically
+
 - the idea here is to allow a user to click on something on the per-bug page that will lead them through the logic used to arrive at conclusions
     - was originally thinking of exploitability 'tags', though for this to be worth the effort this should be generalizble
 - could instrument execution to record traces ; see trace.py

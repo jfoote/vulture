@@ -12,6 +12,10 @@ This implementation assumes it is running in an EC2 instance with a role that ha
 
 Vulture runs on an EC2 node. The script downloads bug info from public trackers for the time period since it was last run. The script then runs some analysis (see below) over the dataset and produces a JSON file. The JSON file and an html file that points to it are uploaded to an S3-hosted static site for consumption.
 
+## The story (adapted from an email)
+
+A while back I had a suspicion that there was untapped 0day circulating as public bugs in open source trackers. Despite many other obligations curiosity started to get the better of me so I hacked together a tool to probe ubuntu’s bug tracker for 0day as an after-hours project. I got partway there before I stepped back and adjusted to focus my after-hours research on more tangible defensive problems. 
+
 ## Status stuff (summer 2014)
 
 ### Some things that are done

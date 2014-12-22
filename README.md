@@ -2,7 +2,7 @@
 
 Analyzes open source bug trackers for interesting vulnerabilites. See [the latest report](https://s3.amazonaws.com/vulture88/index.html?sorts%5Bdate_modified%5D=-1&sorts%5Binstalls%5D=-1) for an example.
 
-_WARNING: This code is a mess and has not been factored for consumption for others._
+**WARNING: This code is a mess and has not been factored for maintainability or consumption by others in general.**
 
 *So unpolished you need to read the source code to figure out how to use it*
 

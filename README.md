@@ -1,5 +1,7 @@
 # vulture
 
+![Screenshot](https://cloud.githubusercontent.com/assets/2072203/6023462/f51c9098-ab92-11e4-938f-d7962ded2769.png)
+
 Analyzes open source bug trackers for interesting vulnerabilites. See [the latest report](https://s3.amazonaws.com/vulture88/index.html?sorts%5Bdate_modified%5D=-1&sorts%5Binstalls%5D=-1) for an example.
 
 **WARNING: This code is a mess and has not been factored for maintainability or consumption by others in general.**

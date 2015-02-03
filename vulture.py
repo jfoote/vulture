@@ -2,20 +2,10 @@
 
 import logging, os
 
-
-'''
-try:
-    log._nh = logging.NullHandler() # no logging by default
-    log.addHandler(log._nh)
-except AttributeError as e:
-    logging.warning("unable to add log null handler (may be Python2.6): %s" %\
-        str(e))
-'''
-
 from optparse import OptionParser
 if __name__ == "__main__":
     usage = "usage: %prog [OPTIONS] CMD"
-    desc = "Scrapes pages from bing results on S3 for links to files and stores results to S3."
+    desc = "Analyzes open source bug trackers for interesting vulnerabilites. So unpolished you need to read the source code to know how to use it. This implementation assumes it is running in an EC2 instance with a role that has access to the 'vulture88' bucket. I'm sorry."
     parser = OptionParser(usage=usage, description=desc)
     parser.add_option("-l", "--logfile", dest="logfile")
     parser.add_option("-e", "--loglevel", dest="loglevel", default="DEBUG")
@@ -40,7 +30,6 @@ if __name__ == "__main__":
     log.level = getattr(logging, options.loglevel)
     log.info(str(options))
 
-    #bucket = boto.connect_s3().get_bucket(options.bucket) 
     if len(args) < 1:
         parser.error("Wrong number of arguments")
 
